@@ -1,0 +1,31 @@
+apply plugin: 'com.android.application'
+apply plugin: 'com.google.gms.google-services'
+
+android {
+    compileSdkVersion 28
+
+
+
+    defaultConfig {
+        applicationId "gr.stratego.patrastournament.app"
+        minSdkVersion 19
+        targetSdkVersion 28
+        versionCode 3
+        versionName "1.3"
+
+
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+}
+
+dependencies {
+    implementation project(':me')
+    implementation project(':base')
+}

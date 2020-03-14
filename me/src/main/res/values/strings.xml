@@ -1,0 +1,12 @@
+<resources>
+    <string name="title_home">Me</string>
+    <string name="title_dashboard">Info</string>
+    <string name="title_map">Map</string>
+    <string name="live_ranking">Live Ranking</string>
+    <string name="live_results">Live Results</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="input_data_prompt">You are not currently logged in, if you are participating in the tournament please insert your email and your 4 digit PIN which was sent to you by the organizers</string>
+    <string name="app_name">Strategeiras App</string>
+</resources>

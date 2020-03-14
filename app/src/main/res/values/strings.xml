@@ -1,0 +1,7 @@
+<resources>
+    <string name="title_home">Me</string>
+    <string name="title_dashboard">Info</string>
+    <string name="title_map">Map</string>
+    <string name="live_ranking">Live Ranking</string>
+    <string name="live_results">Live Results</string>
+</resources>
