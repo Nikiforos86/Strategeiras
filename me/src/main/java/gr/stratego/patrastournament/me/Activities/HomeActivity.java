@@ -120,7 +120,6 @@ public class HomeActivity extends AppCompatActivity implements UserProfileFragme
                                 mdlPin = deepLink.getQueryParameter("pin");
                             }
                         }
-
                     }
                 })
                 .addOnFailureListener(this, new OnFailureListener() {
