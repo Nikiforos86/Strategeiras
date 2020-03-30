@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
@@ -27,6 +28,8 @@ import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 import com.google.firebase.dynamiclinks.PendingDynamicLinkData;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import gr.stratego.patrastournament.me.Adapters.HomeFragmentAdapter;
 import gr.stratego.patrastournament.me.Fragments.LiveRankingFragment;
@@ -36,6 +39,7 @@ import gr.stratego.patrastournament.me.Fragments.TournamentInfoFragment;
 import gr.stratego.patrastournament.me.Fragments.UserProfileFragment;
 import gr.stratego.patrastournament.me.Models.AppSettings;
 import gr.stratego.patrastournament.me.Models.BattleResultModel;
+import gr.stratego.patrastournament.me.Models.PastBattle;
 import gr.stratego.patrastournament.me.Models.RankingModel;
 import gr.stratego.patrastournament.me.Models.User;
 import gr.stratego.patrastournament.me.R;
@@ -64,6 +68,7 @@ public class HomeActivity extends AppCompatActivity implements UserProfileFragme
     private DatabaseReference mDatabase;
     private String mdlMail;
     private String mdlPin;
+    private HashMap<String, PastBattle> pastBattles = new HashMap<>();
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -103,7 +108,6 @@ public class HomeActivity extends AppCompatActivity implements UserProfileFragme
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
 
         FirebaseDynamicLinks.getInstance()
                 .getDynamicLink(getIntent())
@@ -137,6 +141,8 @@ public class HomeActivity extends AppCompatActivity implements UserProfileFragme
     private void initActivity() {
         DatabaseReference resultsUrlReference = mDatabase.child("appSettings");
         DatabaseReference usersReference = mDatabase.child("Users");
+        final DatabaseReference tournamentsReference = mDatabase.child("Tournaments");
+
 
         resultsUrlReference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -198,7 +204,106 @@ public class HomeActivity extends AppCompatActivity implements UserProfileFragme
             }
         });
 
+        tournamentsReference.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                final String tournamentKey = dataSnapshot.getKey();
+                final DatabaseReference tournamentRef = tournamentsReference.child(tournamentKey);
+                tournamentRef.addChildEventListener(new ChildEventListener() {
+                    @Override
+                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot2, @Nullable String s2) {
+                        final String battleKey = dataSnapshot2.getKey();
+                        final DatabaseReference battleRef = tournamentRef.child(battleKey);
+                        battleRef.addChildEventListener(new ChildEventListener() {
+                            @Override
+                            public void onChildAdded(@NonNull DataSnapshot dataSnapshot3, @Nullable String s2) {
+                                if(pastBattles.containsKey(tournamentKey+battleKey)){
+                                    PastBattle pastBattle = pastBattles.get(tournamentKey+battleKey);
+                                    pastBattle.setPlayer2(dataSnapshot3.getKey());
+                                    pastBattle.setResultplayer2((String)dataSnapshot3.getValue());
+                                } else {
+                                    PastBattle pastBattle = new PastBattle();
+                                    pastBattle.setPlayer1(dataSnapshot3.getKey());
+                                    pastBattle.setResultPlayer1((String)dataSnapshot3.getValue());
+                                    pastBattles.put(tournamentKey+battleKey, pastBattle);
+                                }
+
+                            }
+
+                            @Override
+                            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                            }
+
+                            @Override
+                            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+                            }
+
+                            @Override
+                            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                    }
+
+                    @Override
+                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+                    }
+
+                    @Override
+                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
         initUI();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                for (Map.Entry<String, PastBattle> entry : pastBattles.entrySet()) {
+                    Timber.d(entry.getKey() + " = " + entry.getValue());
+                }
+                Timber.d("TOTAL: "+pastBattles.size()+" battles");
+            }
+        }, 5000);
     }
 
     private void initUI() {
