@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
@@ -16,6 +17,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import gr.stratego.patrastournament.me.Models.BattleResultModel;
+import gr.stratego.patrastournament.me.Models.PastBattle;
 import gr.stratego.patrastournament.me.Models.RankingModel;
 import gr.stratego.patrastournament.me.Models.User;
 import gr.stratego.patrastournament.me.R;
@@ -138,6 +140,7 @@ public class UserProfileFragment extends BaseStrategoFragment {
                         mLeftName.setText(battleResult.getLeftName());
                         mRightName.setText(battleResult.getRightName());
                         mScore.setText(battleResult.getScore());
+                        setupPastBattles(battleResult);
                         break;
                     }
                 }
@@ -157,6 +160,15 @@ public class UserProfileFragment extends BaseStrategoFragment {
             }
         }
         updateUI();
+    }
+
+    private void setupPastBattles(final BattleResultModel battleResult) {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                ArrayList<PastBattle> playersPastBattles = mListener.findPastBattles(battleResult);
+            }
+        }, 5000);
     }
 
     @Override
@@ -263,5 +275,6 @@ public class UserProfileFragment extends BaseStrategoFragment {
 
     public interface OnUserProfileListener {
         void onLogin(String mail, String pin);
+        ArrayList<PastBattle> findPastBattles(BattleResultModel battleResult);
     }
 }

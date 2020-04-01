@@ -1,7 +1,10 @@
 package gr.stratego.patrastournament.me.Models;
 
+import gr.stratego.patrastournament.me.Utils.StringUtils;
+
 public class PastBattle {
 
+    private String tournament;
     private String player1;
     private String player2;
     private String resultPlayer1;
@@ -39,8 +42,16 @@ public class PastBattle {
         this.resultplayer2 = resultplayer2;
     }
 
+    public String getTournament() {
+        return tournament;
+    }
+
+    public void setTournament(String tournament) {
+        this.tournament = tournament;
+    }
+
     @Override
     public String toString(){
-        return player1+" "+resultPlayer1+" VS "+player2+" "+resultplayer2;
+        return tournament+": "+player1+" "+resultPlayer1+" VS "+player2+" "+resultplayer2;
     }
 }

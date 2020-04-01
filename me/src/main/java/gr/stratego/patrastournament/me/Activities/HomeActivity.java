@@ -12,12 +12,10 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -68,7 +66,8 @@ public class HomeActivity extends AppCompatActivity implements UserProfileFragme
     private DatabaseReference mDatabase;
     private String mdlMail;
     private String mdlPin;
-    private HashMap<String, PastBattle> pastBattles = new HashMap<>();
+    private HashMap<String, PastBattle> mPastBattles = new HashMap<>();
+    ArrayList<RankingModel> mRankingList = new ArrayList<>();
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -175,8 +174,8 @@ public class HomeActivity extends AppCompatActivity implements UserProfileFragme
                         && StringUtils.areEqual(SharedPreferencesUtil.loadSharedPreference(SharedPreferencesUtil.UserId, SharedPreferencesUtil.UserId), user.getMail())) {
                     StrategoApplication.setCurrentUser(user);
                 } else {
-                    if(StringUtils.isNotNullOrEmpty(mdlMail) && StringUtils.isNotNullOrEmpty(mdlPin)
-                    && StringUtils.isNotNullOrEmpty(user.getMail()) && mdlMail.equalsIgnoreCase(user.getMail())){
+                    if (StringUtils.isNotNullOrEmpty(mdlMail) && StringUtils.isNotNullOrEmpty(mdlPin)
+                            && StringUtils.isNotNullOrEmpty(user.getMail()) && mdlMail.equalsIgnoreCase(user.getMail())) {
                         onLogin(mdlMail, mdlPin);
                     }
                 }
@@ -217,93 +216,130 @@ public class HomeActivity extends AppCompatActivity implements UserProfileFragme
                         battleRef.addChildEventListener(new ChildEventListener() {
                             @Override
                             public void onChildAdded(@NonNull DataSnapshot dataSnapshot3, @Nullable String s2) {
-                                if(pastBattles.containsKey(tournamentKey+battleKey)){
-                                    PastBattle pastBattle = pastBattles.get(tournamentKey+battleKey);
-                                    pastBattle.setPlayer2(dataSnapshot3.getKey());
-                                    pastBattle.setResultplayer2((String)dataSnapshot3.getValue());
+                                if (mPastBattles.containsKey(tournamentKey + battleKey)) {
+                                    PastBattle pastBattle = mPastBattles.get(tournamentKey + battleKey);
+                                    if (StringUtils.isNotNullOrEmpty(dataSnapshot3.getKey())) {
+                                        pastBattle.setPlayer2(dataSnapshot3.getKey());
+                                        pastBattle.setResultplayer2((String) dataSnapshot3.getValue());
+                                    }
+
                                 } else {
                                     PastBattle pastBattle = new PastBattle();
-                                    pastBattle.setPlayer1(dataSnapshot3.getKey());
-                                    pastBattle.setResultPlayer1((String)dataSnapshot3.getValue());
-                                    pastBattles.put(tournamentKey+battleKey, pastBattle);
+                                    pastBattle.setTournament(tournamentKey);
+                                    if (StringUtils.isNotNullOrEmpty(dataSnapshot3.getKey())) {
+                                        pastBattle.setPlayer1(dataSnapshot3.getKey());
+                                        pastBattle.setResultPlayer1((String) dataSnapshot3.getValue());
+                                    }
+                                    mPastBattles.put(tournamentKey + battleKey, pastBattle);
                                 }
 
                             }
 
                             @Override
                             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
                             }
 
                             @Override
                             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
                             }
 
                             @Override
                             public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
                             }
 
                             @Override
                             public void onCancelled(@NonNull DatabaseError databaseError) {
-
                             }
                         });
                     }
 
                     @Override
                     public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
                     }
 
                     @Override
                     public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
                     }
 
                     @Override
                     public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
                     }
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
-
                     }
                 });
             }
 
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
             }
 
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
             }
 
             @Override
             public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
             }
         });
         initUI();
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                for (Map.Entry<String, PastBattle> entry : pastBattles.entrySet()) {
-                    Timber.d(entry.getKey() + " = " + entry.getValue());
+                for (Map.Entry<String, PastBattle> entry : mPastBattles.entrySet()) {
+                    Timber.d("-> " + entry.getValue());
                 }
-                Timber.d("TOTAL: "+pastBattles.size()+" battles");
+                Timber.d("TOTAL: " + mPastBattles.size() + " battles");
             }
         }, 5000);
+    }
+
+    private ArrayList<PastBattle> getAllPastBattles() {
+        ArrayList<PastBattle> pastBattles = new ArrayList<>();
+        for (Map.Entry<String, PastBattle> entry : mPastBattles.entrySet()) {
+            pastBattles.add(entry.getValue());
+        }
+        return pastBattles;
+    }
+
+    @Override
+    public ArrayList<PastBattle> findPastBattles(BattleResultModel battleResult) {
+        ArrayList<PastBattle> pastBattlesBetweenThem = new ArrayList<>();
+
+        int playersFound = 0;
+        String firstPlayer = null;
+        String secondPlayer = null;
+
+        //mRankingList has all players of the tournament
+        for (RankingModel rankingModel : mRankingList) {
+            if (StringUtils.contains(rankingModel.getName().replace(" ", ", "), battleResult.getLeftName())
+                    || StringUtils.contains(rankingModel.getName().replace(" ", ", "), battleResult.getRightName())) {
+                playersFound++;
+                if (playersFound == 1) {
+                    firstPlayer = rankingModel.getName();
+                } else if (playersFound == 2) {
+                    secondPlayer = rankingModel.getName();
+                }
+            }
+        }
+
+        if(playersFound != 2){
+            return null;
+        }
+
+        // getAllPAstBattles has all past battles as a list
+        for (PastBattle pastBattle : getAllPastBattles()) {
+            if((StringUtils.areEqual(firstPlayer, pastBattle.getPlayer1()) && StringUtils.areEqual(secondPlayer, pastBattle.getPlayer2()))
+                || (StringUtils.areEqual(firstPlayer, pastBattle.getPlayer2()) && StringUtils.areEqual(secondPlayer, pastBattle.getPlayer1()))){
+                pastBattlesBetweenThem.add(pastBattle);
+            }
+        }
+        return pastBattlesBetweenThem;
     }
 
     private void initUI() {
@@ -420,11 +456,10 @@ public class HomeActivity extends AppCompatActivity implements UserProfileFragme
         boolean readResults = false, readStandings = false;
 
         ArrayList<BattleResultModel> battleList = new ArrayList<>();
-        ArrayList<RankingModel> rankingList = new ArrayList<>();
+
 
         try {
 
-            int resultsIndex = 0;
             for (String sCurrentLine : htmlLines) {
 
                 if (sCurrentLine.contains("<title>") && sCurrentLine.contains("</title>")) {
@@ -458,7 +493,7 @@ public class HomeActivity extends AppCompatActivity implements UserProfileFragme
                     String[] splitStanding = sCurrentLine.trim().split("\\s+");
 
                     if (splitStanding.length > 1) {
-                        rankingList.add(setRankingLine(splitStanding));
+                        mRankingList.add(setRankingLine(splitStanding));
                     }
                 }
                 if (sCurrentLine.contains("<pre>")
@@ -479,9 +514,9 @@ public class HomeActivity extends AppCompatActivity implements UserProfileFragme
             e.printStackTrace();
         }
 
-        mLiveRankingFragment.updateData(rankingList);
+        mLiveRankingFragment.updateData(mRankingList);
         mLiveResultsFragment.updateData(battleList);
-        mUserProfileFragment.updateData(rankingList);
+        mUserProfileFragment.updateData(mRankingList);
         mUserProfileFragment.updateData(battleList);
 
     }
@@ -558,4 +593,6 @@ public class HomeActivity extends AppCompatActivity implements UserProfileFragme
 
 
     }
+
+
 }
