@@ -4,18 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    tools:background="#ff0000"
+    android:layout_marginTop="4dp"
+    android:layout_marginBottom="4dp"
     android:orientation="horizontal">
 
-    <android.support.v7.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginRight="8dp"
-        app:cardBackgroundColor="#f5ffffff"
-        app:cardCornerRadius="4dp"
-        app:cardElevation="2dp"
-        app:cardUseCompatPadding="true">
-
         <LinearLayout
+            android:background="@drawable/past_battle_background"
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:orientation="horizontal"
@@ -53,5 +48,4 @@
                 app:autoSizeTextType="uniform"
                 tools:text="VICTORY" />
         </LinearLayout>
-    </android.support.v7.widget.CardView>
 </LinearLayout>

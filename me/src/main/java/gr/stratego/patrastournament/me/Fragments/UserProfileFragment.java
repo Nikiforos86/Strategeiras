@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -42,6 +43,7 @@ public class UserProfileFragment extends BaseStrategoFragment {
     private TextView mPositionTextView;
 
     private View mNextRoundView;
+    private View mHistoryLayout;
     private TextView mNextRoundTextView;
     private TextView mNextRountTableTextView, mLeftName, mRightName, mScore;
 
@@ -93,6 +95,7 @@ public class UserProfileFragment extends BaseStrategoFragment {
         mWelcomeTextView = view.findViewById(R.id.welcome_text_view);
         mPositionTextView = view.findViewById(R.id.position_text_view);
         mNextRoundView = view.findViewById(R.id.next_round_layout);
+        mHistoryLayout = view.findViewById(R.id.history_layout);
         mNextRoundTextView = view.findViewById(R.id.next_round_text_view);
 
         mLeftName = view.findViewById(R.id.leftTextView);
@@ -170,18 +173,19 @@ public class UserProfileFragment extends BaseStrategoFragment {
     }
 
     private void setupPastBattles(final BattleResultModel battleResult) {
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
+//        new Handler().postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
                 ArrayList<Object> playersPastBattles = mListener.findPastBattles(battleResult);
                 if(CollectionUtils.isNotEmpty(playersPastBattles)) {
                     mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
                     mRecyclerView.setAdapter(new RankingRecyclerAdapter(playersPastBattles, getActivity()));
+                    ViewCompat.setNestedScrollingEnabled(mRecyclerView, false);
                 } else {
-                    mRecyclerView.setVisibility(View.GONE);
+                    mHistoryLayout.setVisibility(View.GONE);
                 }
-            }
-        }, 5000);
+//            }
+//        }, 1000);
     }
 
     @Override
@@ -227,6 +231,8 @@ public class UserProfileFragment extends BaseStrategoFragment {
 
         mNextRoundView.setBackground(bg);
         mNextRoundTextView.setTextColor(textColor);
+
+        mHistoryLayout.setBackground(bg);
 
         mNextRountTableTextView.setTextColor(textColor);
         mTitleTextView.setTextColor(textColor);
