@@ -8,6 +8,8 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +18,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import gr.stratego.patrastournament.me.Adapters.RankingRecyclerAdapter;
 import gr.stratego.patrastournament.me.Models.BattleResultModel;
 import gr.stratego.patrastournament.me.Models.PastBattle;
 import gr.stratego.patrastournament.me.Models.RankingModel;
@@ -50,6 +53,8 @@ public class UserProfileFragment extends BaseStrategoFragment {
     private Button mLogout;
 
     private String mTournamentTitle;
+
+    private RecyclerView mRecyclerView;
 
     public UserProfileFragment() {
         // Required empty public constructor
@@ -101,6 +106,8 @@ public class UserProfileFragment extends BaseStrategoFragment {
 
         mLogin = view.findViewById(R.id.login_button);
         mLogout = view.findViewById(R.id.logout_button);
+
+        mRecyclerView = view.findViewById(R.id.pastBattles);
 
         mLogin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -166,7 +173,13 @@ public class UserProfileFragment extends BaseStrategoFragment {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                ArrayList<PastBattle> playersPastBattles = mListener.findPastBattles(battleResult);
+                ArrayList<Object> playersPastBattles = mListener.findPastBattles(battleResult);
+                if(CollectionUtils.isNotEmpty(playersPastBattles)) {
+                    mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
+                    mRecyclerView.setAdapter(new RankingRecyclerAdapter(playersPastBattles, getActivity()));
+                } else {
+                    mRecyclerView.setVisibility(View.GONE);
+                }
             }
         }, 5000);
     }
@@ -275,6 +288,6 @@ public class UserProfileFragment extends BaseStrategoFragment {
 
     public interface OnUserProfileListener {
         void onLogin(String mail, String pin);
-        ArrayList<PastBattle> findPastBattles(BattleResultModel battleResult);
+        ArrayList<Object> findPastBattles(BattleResultModel battleResult);
     }
 }

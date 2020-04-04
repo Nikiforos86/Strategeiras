@@ -220,7 +220,7 @@ public class HomeActivity extends AppCompatActivity implements UserProfileFragme
                                     PastBattle pastBattle = mPastBattles.get(tournamentKey + battleKey);
                                     if (StringUtils.isNotNullOrEmpty(dataSnapshot3.getKey())) {
                                         pastBattle.setPlayer2(dataSnapshot3.getKey());
-                                        pastBattle.setResultplayer2((String) dataSnapshot3.getValue());
+                                        pastBattle.setResultPlayer2((String) dataSnapshot3.getValue());
                                     }
 
                                 } else {
@@ -308,8 +308,8 @@ public class HomeActivity extends AppCompatActivity implements UserProfileFragme
     }
 
     @Override
-    public ArrayList<PastBattle> findPastBattles(BattleResultModel battleResult) {
-        ArrayList<PastBattle> pastBattlesBetweenThem = new ArrayList<>();
+    public ArrayList<Object> findPastBattles(BattleResultModel battleResult) {
+        ArrayList<Object> pastBattlesBetweenThem = new ArrayList<>();
 
         int playersFound = 0;
         String firstPlayer = null;

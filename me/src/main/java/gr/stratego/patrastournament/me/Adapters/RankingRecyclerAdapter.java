@@ -2,7 +2,6 @@ package gr.stratego.patrastournament.me.Adapters;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.LinearGradient;
 import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -14,19 +13,22 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import gr.stratego.patrastournament.me.Models.BattleResultModel;
+import gr.stratego.patrastournament.me.Models.PastBattle;
 import gr.stratego.patrastournament.me.Models.RankingModel;
 import gr.stratego.patrastournament.me.R;
 import gr.stratego.patrastournament.me.StrategoApplication;
-import gr.stratego.patrastournament.me.Utils.GeneralUtils;
 import gr.stratego.patrastournament.me.Utils.StringUtils;
 
 public class RankingRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private final static int RAMKING = 0;
     private final static int RESULTS = 1;
+    private final static int PAST_BATTLE = 2;
+
 
     private ArrayList<Object> mDataList;
     private Context mContext;
+    private String mCurrentPlayer;
     private GradientDrawable drawable;
     private int textColor;
 
@@ -34,6 +36,9 @@ public class RankingRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         this.mDataList = mDataList;
         this.mContext = context;
         this.textColor = Color.BLACK;
+        if(StrategoApplication.getCurrentUser() != null){
+            this.mCurrentPlayer = StrategoApplication.getCurrentUser().getFullName();
+        }
     }
 
     @NonNull
@@ -44,6 +49,8 @@ public class RankingRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                 return new RankingViewHolder(LayoutInflater.from(mContext).inflate(R.layout.ranking_list_item, parent, false));
             case RESULTS:
                 return new ResultsViewHolder(LayoutInflater.from(mContext).inflate(R.layout.results_list_item, parent, false));
+            case PAST_BATTLE:
+                return new PastBattleViewHolder(LayoutInflater.from(mContext).inflate(R.layout.past_battle_list_item, parent, false));
         }
 
         return null;
@@ -84,6 +91,15 @@ public class RankingRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             vh.leftName.setTextColor(textColor);
             vh.score.setTextColor(textColor);
             vh.rightName.setTextColor(textColor);
+        } else if (mDataList.get(position) instanceof PastBattle && holder instanceof PastBattleViewHolder) {
+            PastBattle pastBattle = (PastBattle) mDataList.get(position);
+            PastBattleViewHolder vh = (PastBattleViewHolder) holder;
+            vh.tournament.setText(pastBattle.getTournament());
+            if(StringUtils.areEqual(mCurrentPlayer, pastBattle.getPlayer1())){
+                vh.result.setText(pastBattle.getResultPlayer1());
+            } else if(StringUtils.areEqual(mCurrentPlayer, pastBattle.getPlayer2())){
+                vh.result.setText(pastBattle.getResultPlayer2());
+            }
         }
     }
 
@@ -91,8 +107,10 @@ public class RankingRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     public int getItemViewType(int position) {
         if (mDataList.get(position) instanceof RankingModel) {
             return RAMKING;
-        } else {
+        } else if(mDataList.get(position) instanceof BattleResultModel) {
             return RESULTS;
+        } else {
+            return PAST_BATTLE;
         }
     }
 
@@ -134,6 +152,17 @@ public class RankingRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             this.rightName = itemView.findViewById(R.id.rightTextView);
             this.score = itemView.findViewById(R.id.scoreTextView);
             this.index = itemView.findViewById(R.id.indexTextView);
+        }
+    }
+
+    private class PastBattleViewHolder extends RecyclerView.ViewHolder {
+
+        private TextView tournament, result;
+
+        public PastBattleViewHolder(View itemView) {
+            super(itemView);
+            this.tournament = itemView.findViewById(R.id.tournamentTextView);
+            this.result = itemView.findViewById(R.id.resultTextView);
         }
     }
 }
