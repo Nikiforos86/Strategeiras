@@ -42,6 +42,7 @@ public class UserProfileFragment extends BaseStrategoFragment {
     private TextView mWelcomeTextView;
     private TextView mPositionTextView;
 
+    private TextView mOpponentTextView;
     private TextView mVictoriesTextView;
     private TextView mDefeatsTextView;
     private TextView mDrawsTextView;
@@ -102,6 +103,7 @@ public class UserProfileFragment extends BaseStrategoFragment {
         mHistoryLayout = view.findViewById(R.id.history_layout);
         mNextRoundTextView = view.findViewById(R.id.next_round_text_view);
 
+        mOpponentTextView = view.findViewById(R.id.opponentTextView);
         mVictoriesTextView = view.findViewById(R.id.victoriesTextView);
         mDefeatsTextView = view.findViewById(R.id.defeatsTextView);
         mDrawsTextView = view.findViewById(R.id.drawsTextView);
@@ -193,12 +195,15 @@ public class UserProfileFragment extends BaseStrategoFragment {
                        int defeatCounter = 0;
                        int drawCounter = 0;
                        String result = "";
+                       String opponent = "";
                        for (Object pastBattleObj : playersPastBattles) {
                            PastBattle pastBattle = (PastBattle) pastBattleObj;
                            if (pastBattle.getPlayer1().equals(currentUser)) {
                                result = pastBattle.getResultPlayer1();
+                               opponent = pastBattle.getPlayer2();
                            } else if (pastBattle.getPlayer2().equals(currentUser)){
                                result = pastBattle.getResultPlayer2();
+                               opponent = pastBattle.getPlayer1();
                            }
 
                            switch(result) {
@@ -214,6 +219,7 @@ public class UserProfileFragment extends BaseStrategoFragment {
                            }
                        }
 
+                        mOpponentTextView.setText(opponent);
                         mVictoriesTextView.setText("Victories:" + victoryCounter);
                         mDefeatsTextView.setText("Defeats:" + defeatCounter);
                         mDrawsTextView.setText("Draws:" + drawCounter);

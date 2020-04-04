@@ -182,7 +182,23 @@
                     app:autoSizeMinTextSize="10sp"
                     app:autoSizeStepGranularity="2sp"
                     app:autoSizeTextType="uniform"
-                    android:text="Battle History" />
+                    android:text="Battle history against" />
+
+                <android.support.v7.widget.AppCompatTextView
+                    android:id="@+id/opponentTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="32dp"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="4dp"
+                    android:layout_marginRight="4dp"
+                    android:gravity="center"
+                    android:maxLines="2"
+                    android:textColor="@android:color/black"
+                    app:autoSizeMaxTextSize="18sp"
+                    app:autoSizeMinTextSize="10sp"
+                    app:autoSizeStepGranularity="2sp"
+                    app:autoSizeTextType="uniform"
+                    tools:text="" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
