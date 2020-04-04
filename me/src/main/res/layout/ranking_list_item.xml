@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal">
 
-    <android.support.v7.widget.AppCompatTextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/indexTextView"
         android:layout_width="24dp"
         android:layout_height="24dp"
@@ -22,7 +22,7 @@
         app:autoSizeTextType="uniform"
         tools:text="1." />
 
-    <android.support.v7.widget.CardView
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginRight="8dp"
@@ -37,7 +37,7 @@
             android:orientation="horizontal"
             android:padding="4dp">
 
-            <android.support.v7.widget.AppCompatTextView
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/nameTextView"
                 android:layout_width="match_parent"
                 android:layout_height="24dp"
@@ -52,7 +52,7 @@
                 app:autoSizeTextType="uniform"
                 tools:text="Georgios G Trypanagnostopoulos" />
 
-            <android.support.v7.widget.AppCompatTextView
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/scoreTextView"
                 android:layout_width="56dp"
                 android:layout_height="24dp"
@@ -68,5 +68,5 @@
                 app:autoSizeTextType="uniform"
                 tools:text="12 : 4" />
         </LinearLayout>
-    </android.support.v7.widget.CardView>
+    </androidx.cardview.widget.CardView>
 </LinearLayout>

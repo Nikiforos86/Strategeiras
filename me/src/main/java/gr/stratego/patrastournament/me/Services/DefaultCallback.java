@@ -1,10 +1,8 @@
 package gr.stratego.patrastournament.me.Services;
 
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 
-import gr.stratego.patrastournament.me.R;
-import gr.stratego.patrastournament.me.Utils.GeneralUtils;
 import gr.stratego.patrastournament.me.Utils.StringUtils;
 import timber.log.Timber;
 

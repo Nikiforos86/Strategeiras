@@ -1,28 +1,23 @@
 package gr.stratego.patrastournament.me.Utils;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
 import android.content.res.TypedArray;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.support.v4.content.ContextCompat;
+import androidx.core.content.ContextCompat;
 import android.util.DisplayMetrics;
-import android.view.View;
 
 import com.google.android.gms.maps.model.LatLng;
 
-import java.io.File;
 import java.lang.ref.WeakReference;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.List;
 import java.util.Locale;
 
-import gr.stratego.patrastournament.me.R;
 import gr.stratego.patrastournament.me.StrategoApplication;
 
 public class GeneralUtils {

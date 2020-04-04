@@ -7,7 +7,7 @@
     android:background="@android:color/transparent"
     android:orientation="vertical">
 
-    <android.support.v7.widget.AppCompatTextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/title"
         android:textColor="#d9d9d9"
         android:gravity="center"
@@ -35,7 +35,7 @@
         android:visibility="gone"
         layout="@layout/no_results_layout"/>
 
-    <android.support.v7.widget.RecyclerView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_main"
         android:layout_marginTop="4dp"
         android:layout_width="match_parent"
