@@ -179,7 +179,6 @@ public class UserProfileFragment extends BaseStrategoFragment {
                 ArrayList<Object> playersPastBattles = mListener.findPastBattles(battleResult);
                 if(CollectionUtils.isNotEmpty(playersPastBattles)) {
 					
-					StrategoApplication.getCurrentUser().getFullName();
                     if(StrategoApplication.getCurrentUser() != null){
                        String currentUser = StrategoApplication.getCurrentUser().getFullName();
                        int victoryCounter = 0;
@@ -190,8 +189,7 @@ public class UserProfileFragment extends BaseStrategoFragment {
                            PastBattle pastBattle = (PastBattle) pastBattleObj;
                            if (pastBattle.getPlayer1().equals(currentUser)) {
                                result = pastBattle.getResultPlayer1();
-                           }
-                           else if (pastBattle.getPlayer2().equals(currentUser)){
+                           } else if (pastBattle.getPlayer2().equals(currentUser)){
                                result = pastBattle.getResultPlayer2();
                            }
 

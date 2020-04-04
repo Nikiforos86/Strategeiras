@@ -452,7 +452,7 @@ public class HomeActivity extends AppCompatActivity implements UserProfileFragme
             mRefreshLayout.setRefreshing(false);
         }
         mRankingList = new ArrayList<>();
-        
+
         String[] htmlLines = tournamentProgressHtml.split("\n");
         boolean readResults = false, readStandings = false;
 
