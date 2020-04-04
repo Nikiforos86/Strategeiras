@@ -42,6 +42,10 @@ public class UserProfileFragment extends BaseStrategoFragment {
     private TextView mWelcomeTextView;
     private TextView mPositionTextView;
 
+    private TextView mVictoriesTextView;
+    private TextView mDefeatsTextView;
+    private TextView mDrawsTextView;
+
     private View mNextRoundView;
     private View mHistoryLayout;
     private TextView mNextRoundTextView;
@@ -97,6 +101,10 @@ public class UserProfileFragment extends BaseStrategoFragment {
         mNextRoundView = view.findViewById(R.id.next_round_layout);
         mHistoryLayout = view.findViewById(R.id.history_layout);
         mNextRoundTextView = view.findViewById(R.id.next_round_text_view);
+
+        mVictoriesTextView = view.findViewById(R.id.victoriesTextView);
+        mDefeatsTextView = view.findViewById(R.id.defeatsTextView);
+        mDrawsTextView = view.findViewById(R.id.drawsTextView);
 
         mLeftName = view.findViewById(R.id.leftTextView);
         mRightName = view.findViewById(R.id.rightTextView);
@@ -206,8 +214,12 @@ public class UserProfileFragment extends BaseStrategoFragment {
                            }
                        }
 
+                        mVictoriesTextView.setText("Victories:" + victoryCounter);
+                        mDefeatsTextView.setText("Defeats:" + defeatCounter);
+                        mDrawsTextView.setText("Draws:" + drawCounter);
+
                     }
-					
+
                     mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
                     mRecyclerView.setAdapter(new RankingRecyclerAdapter(playersPastBattles, getActivity()));
                     ViewCompat.setNestedScrollingEnabled(mRecyclerView, false);
