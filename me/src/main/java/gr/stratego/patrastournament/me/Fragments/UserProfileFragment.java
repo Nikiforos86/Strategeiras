@@ -178,6 +178,38 @@ public class UserProfileFragment extends BaseStrategoFragment {
 //            public void run() {
                 ArrayList<Object> playersPastBattles = mListener.findPastBattles(battleResult);
                 if(CollectionUtils.isNotEmpty(playersPastBattles)) {
+					
+					StrategoApplication.getCurrentUser().getFullName();
+                    if(StrategoApplication.getCurrentUser() != null){
+                       String currentUser = StrategoApplication.getCurrentUser().getFullName();
+                       int victoryCounter = 0;
+                       int defeatCounter = 0;
+                       int drawCounter = 0;
+                       String result = "";
+                       for (Object pastBattleObj : playersPastBattles) {
+                           PastBattle pastBattle = (PastBattle) pastBattleObj;
+                           if (pastBattle.getPlayer1().equals(currentUser)) {
+                               result = pastBattle.getResultPlayer1();
+                           }
+                           else if (pastBattle.getPlayer2().equals(currentUser)){
+                               result = pastBattle.getResultPlayer2();
+                           }
+
+                           switch(result) {
+                               case "VICTORY":
+                                   victoryCounter++;
+                                   break;
+                               case "DEFEAT":
+                                   defeatCounter++;
+                                   break;
+                               case "DRAW":
+                                   drawCounter++;
+                                   break;
+                           }
+                       }
+
+                    }
+					
                     mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
                     mRecyclerView.setAdapter(new RankingRecyclerAdapter(playersPastBattles, getActivity()));
                     ViewCompat.setNestedScrollingEnabled(mRecyclerView, false);
