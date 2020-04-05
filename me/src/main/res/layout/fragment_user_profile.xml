@@ -157,6 +157,7 @@
 
             <LinearLayout
                 android:id="@+id/history_layout"
+                android:visibility="gone"
                 android:layout_marginLeft="16dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginRight="16dp"

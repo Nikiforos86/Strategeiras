@@ -5,22 +5,25 @@ android {
     defaultConfig {
         minSdkVersion 19
         targetSdkVersion 28
-        versionCode 3
+        multiDexEnabled true
+        versionCode 4
         versionName "1.4"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-
     }
 }
 
 def support_version = "27.1.1"
 def firebase_services_version = "16.0.6"
 def play_services_version = "15.0.1"
+def multidex_version = "2.0.1"
 
 
 dependencies {
+    implementation 'androidx.multidex:multidex:2.0.1'
+    implementation 'com.android.support:multidex:1.0.3'
+
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-
     //    compile fileTree(include: ['*.jar'], dir: 'libs')
 //    implementation 'com.facebook.android:facebook-android-sdk:4.40.0'
     implementation 'androidx.appcompat:appcompat:1.2.0-beta01'
@@ -28,21 +31,23 @@ dependencies {
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'androidx.recyclerview:recyclerview:1.2.0-alpha02'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation "com.google.firebase:firebase-core:${firebase_services_version}"
+    implementation "com.google.firebase:firebase-core:17.3.0"
+
+    implementation 'com.google.android.gms:play-services-ads:19.0.1'
 
     //Notificationh
-    implementation 'com.google.firebase:firebase-messaging:17.3.4'
+    implementation 'com.google.firebase:firebase-messaging:20.1.5'
 
     //Dynamic Links
-    implementation "com.google.firebase:firebase-invites:${firebase_services_version}"
-    implementation "com.google.firebase:firebase-database:${firebase_services_version}"
-    implementation "com.google.firebase:firebase-dynamic-links:${firebase_services_version}"
+    implementation "com.google.firebase:firebase-invites:17.0.0"
+    implementation "com.google.firebase:firebase-database:19.2.1"
+    implementation "com.google.firebase:firebase-dynamic-links:19.1.0"
 
     //Google Location
 
     //    implementation "com.google.android.gms:play-services-location:${play_services_version}"
-    implementation "com.google.android.gms:play-services-maps:${play_services_version}"
-    implementation "com.google.android.gms:play-services-location:${play_services_version}"
+    implementation "com.google.android.gms:play-services-maps:17.0.0"
+    implementation "com.google.android.gms:play-services-location:17.0.0"
     implementation 'androidx.constraintlayout:constraintlayout:2.0.0-beta4'
     implementation 'com.squareup.okhttp3:okhttp:3.10.0'
     implementation 'com.squareup.okhttp3:logging-interceptor:3.9.1'

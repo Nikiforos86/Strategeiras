@@ -7,11 +7,19 @@ import android.os.Bundle;
 import android.os.Handler;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import androidx.viewpager.widget.ViewPager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -56,7 +64,7 @@ public class HomeActivity extends AppCompatActivity implements UserProfileFragme
     private LiveRankingFragment mLiveRankingFragment;
     private LiveResultsFragment mLiveResultsFragment;
     private UserProfileFragment mUserProfileFragment;
-
+    private AdView adView;
     private BottomNavigationView navigationView;
     private HomeFragmentAdapter mAdapter;
     private ViewPager mViewPager;
@@ -107,6 +115,50 @@ public class HomeActivity extends AppCompatActivity implements UserProfileFragme
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        MobileAds.initialize(this, new OnInitializationCompleteListener() {
+            @Override
+            public void onInitializationComplete(InitializationStatus initializationStatus) {
+                adView = findViewById(R.id.adView);
+                adView.setVisibility(View.VISIBLE);
+                AdRequest adRequest = new AdRequest.Builder().build();
+                adView.loadAd(adRequest);
+                adView.setAdListener(new AdListener() {
+                    @Override
+                    public void onAdLoaded() {
+                        Timber.d("onAdLoaded");
+                    }
+
+                    @Override
+                    public void onAdFailedToLoad(int errorCode) {
+                        Timber.d("onAdFailedToLoad "+errorCode);
+                    }
+
+                    @Override
+                    public void onAdOpened() {
+                        Timber.d("onAdOpened");
+
+                    }
+
+                    @Override
+                    public void onAdClicked() {
+                        Timber.d("onAdClicked");
+                    }
+
+                    @Override
+                    public void onAdLeftApplication() {
+                        Timber.d("onAdLeftApplication");
+                    }
+
+                    @Override
+                    public void onAdClosed() {
+                        Timber.d("onAdClosed");
+                        adView.setVisibility(View.GONE);
+                    }
+                });
+
+            }
+        });
 
         FirebaseDynamicLinks.getInstance()
                 .getDynamicLink(getIntent())

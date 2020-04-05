@@ -229,6 +229,8 @@ public class UserProfileFragment extends BaseStrategoFragment {
                     mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
                     mRecyclerView.setAdapter(new RankingRecyclerAdapter(playersPastBattles, getActivity()));
                     ViewCompat.setNestedScrollingEnabled(mRecyclerView, false);
+                    mHistoryLayout.setVisibility(View.VISIBLE);
+
                 } else {
                     mHistoryLayout.setVisibility(View.GONE);
                 }
