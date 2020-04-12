@@ -112,7 +112,7 @@ public class HomeActivity extends AppCompatActivity implements UserProfileFragme
                 return true;
             } else if (id == R.id.navigation_chat) {
                 mViewPager.setCurrentItem(4);
-                mRefreshLayout.setEnabled(true);
+                mRefreshLayout.setEnabled(false);
                 return true;
             }
 //            else if (id == R.id.navigation_map) {

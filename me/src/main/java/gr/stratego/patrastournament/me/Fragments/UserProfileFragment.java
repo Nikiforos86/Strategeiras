@@ -11,6 +11,8 @@ import com.google.android.material.textfield.TextInputEditText;
 import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -235,7 +237,7 @@ public class UserProfileFragment extends BaseStrategoFragment {
                     mHistoryLayout.setVisibility(View.GONE);
                 }
 //            }
-//        }, 1000);
+//        }, 5000);
     }
 
     @Override

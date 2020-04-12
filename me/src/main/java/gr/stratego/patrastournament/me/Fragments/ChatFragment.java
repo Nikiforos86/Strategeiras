@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,6 +35,7 @@ import gr.stratego.patrastournament.me.R;
 import gr.stratego.patrastournament.me.StrategoApplication;
 import gr.stratego.patrastournament.me.Utils.GeneralUtils;
 import gr.stratego.patrastournament.me.Utils.StringUtils;
+import timber.log.Timber;
 
 public class ChatFragment extends BaseStrategoFragment implements RoomListener {
 
@@ -91,81 +93,93 @@ public class ChatFragment extends BaseStrategoFragment implements RoomListener {
         });
 
         int textColor = Color.BLACK;
+        int accentColor = Color.BLACK;
         if (StrategoApplication.getAppSettings() != null
                 && StringUtils.isNotNullOrEmpty(StrategoApplication.getAppSettings().getDarkTextColor())
-                && StringUtils.isNotNullOrEmpty(StrategoApplication.getAppSettings().getPrimaryColor())) {
+                && StringUtils.isNotNullOrEmpty(StrategoApplication.getAppSettings().getAccentColor())) {
             textColor = Color.parseColor(StrategoApplication.getAppSettings().getDarkTextColor());
+            accentColor = Color.parseColor(StrategoApplication.getAppSettings().getAccentColor());
         }
 
         editText.setTextColor(textColor);
 
-        MemberData data = null;
-
-        if(StrategoApplication.getCurrentUser() != null){
-            data = new MemberData(StrategoApplication.getCurrentUser().getDisplayName(), getRandomColor());
-        } else {
-            data = new MemberData("Unknown user", getRandomColor());
-        }
-
-        scaledrone = new Scaledrone(channelID, data);
-        scaledrone.connect(new Listener() {
+        new Handler().postDelayed(new Runnable() {
             @Override
-            public void onOpen() {
-                System.out.println("Scaledrone connection open");
-                // Since the MainActivity itself already implement RoomListener we can pass it as a target
-                mRoom = scaledrone.subscribe(roomName, ChatFragment.this);
+            public void run() {
+                MemberData data = null;
+                if (StrategoApplication.getCurrentUser() != null) {
+                    data = new MemberData(StrategoApplication.getCurrentUser().getDisplayName(), getRandomColor());
+                } else {
+                    data = new MemberData("Unknown user", getRandomColor());
+                }
+
+                scaledrone = new Scaledrone(channelID, data);
+                scaledrone.connect(new Listener() {
+                    @Override
+                    public void onOpen() {
+                        System.out.println("Scaledrone connection open");
+                        // Since the MainActivity itself already implement RoomListener we can pass it as a target
+//                        mRoom = scaledrone.subscribe(roomName, ChatFragment.this);
+                        mRoom = scaledrone.subscribe(roomName, ChatFragment.this, new SubscribeOptions(50)); // ask for 50 messages from the history
+                        mRoom.listenToHistoryEvents(new HistoryRoomListener() {
+                            @Override
+                            public void onHistoryMessage(Room room, com.scaledrone.lib.Message message) {
+                                Timber.d("Scaledrone onHistoryMessage");
+                                onMessage(room, message);
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onOpenFailure(Exception ex) {
+                        System.out.println("Scaledrone onOpenFailure");
+                        System.err.println(ex);
+                    }
+
+                    @Override
+                    public void onFailure(Exception ex) {
+                        System.out.println("Scaledrone onFailure");
+                        System.err.println(ex);
+                    }
+
+                    @Override
+                    public void onClosed(String reason) {
+                        System.out.println("Scaledrone onClosed");
+                        System.err.println(reason);
+                    }
+                });
             }
-
-            @Override
-            public void onOpenFailure(Exception ex) {
-                System.out.println("Scaledrone onOpenFailure");
-
-                System.err.println(ex);
-            }
-
-            @Override
-            public void onFailure(Exception ex) {
-                System.out.println("Scaledrone onFailure");
-                System.err.println(ex);
-            }
-
-            @Override
-            public void onClosed(String reason) {
-                System.out.println("Scaledrone onClosed");
-                System.err.println(reason);
-            }
-        });
+        }, 2000);
 
 
-//        Room room = scaledrone.subscribe(roomName, this, new SubscribeOptions(100)); // ask for 50 messages from the history
-//        room.listenToHistoryEvents(new HistoryRoomListener() {
-//            @Override
-//            public void onHistoryMessage(Room room, com.scaledrone.lib.Message message) {
-//                System.out.println("Scaledrone Received a message from the past " + message.getData().asText());
-//                onMessage(room, message);
-//            }
-//        });
         mAdapter = new MessageAdapter(getContext());
         messagesView.setAdapter(mAdapter);
     }
+
     @Override
     public void onOpen(Room room) {
-        System.out.println("Scaledrone onOpen "+room.getName());
+        System.out.println("Scaledrone onOpen " + room.getName());
     }
 
     @Override
     public void onOpenFailure(Room room, Exception ex) {
-        System.out.println("Scaledrone onOpenFailure "+room.getName());
+        System.out.println("Scaledrone onOpenFailure " + room.getName());
 
     }
 
     @Override
     public void onMessage(Room room, com.scaledrone.lib.Message receivedMessage) {
-        System.out.println("Scaledrone onMessage "+room.getName());
+        System.out.println("Scaledrone onMessage " + room.getName());
 
         final ObjectMapper mapper = new ObjectMapper();
         try {
-            final MemberData data = mapper.treeToValue(receivedMessage.getMember().getClientData(), MemberData.class);
+            MemberData data = null;
+            if(receivedMessage.getMember() != null){
+                data = mapper.treeToValue(receivedMessage.getMember().getClientData(), MemberData.class);
+            } else {
+                data = new MemberData();
+            }
+
             boolean belongsToCurrentUser = receivedMessage.getClientID().equals(scaledrone.getClientID());
             final Message message = new Message(receivedMessage.getData().asText(), data, belongsToCurrentUser);
             getActivity().runOnUiThread(new Runnable() {
@@ -175,7 +189,7 @@ public class ChatFragment extends BaseStrategoFragment implements RoomListener {
                     messagesView.setSelection(messagesView.getCount() - 1);
                 }
             });
-        } catch (JsonProcessingException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -191,7 +205,7 @@ public class ChatFragment extends BaseStrategoFragment implements RoomListener {
     private String getRandomColor() {
         Random r = new Random();
         StringBuffer sb = new StringBuffer("#");
-        while(sb.length() < 7){
+        while (sb.length() < 7) {
             sb.append(Integer.toHexString(r.nextInt()));
         }
         return sb.toString().substring(0, 7);
