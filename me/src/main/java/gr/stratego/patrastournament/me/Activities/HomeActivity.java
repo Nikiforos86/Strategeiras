@@ -36,6 +36,7 @@ import com.google.firebase.dynamiclinks.PendingDynamicLinkData;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import gr.stratego.patrastournament.me.Adapters.HomeFragmentAdapter;
 import gr.stratego.patrastournament.me.Fragments.LiveRankingFragment;
@@ -74,7 +75,7 @@ public class HomeActivity extends AppCompatActivity implements UserProfileFragme
     private DatabaseReference mDatabase;
     private String mdlMail;
     private String mdlPin;
-    private HashMap<String, PastBattle> mPastBattles = new HashMap<>();
+    private ConcurrentHashMap<String, PastBattle> mPastBattles = new ConcurrentHashMap<>();
     ArrayList<RankingModel> mRankingList = new ArrayList<>();
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -255,6 +256,7 @@ public class HomeActivity extends AppCompatActivity implements UserProfileFragme
             }
         });
 
+        Timber.d("History get all data");
         tournamentsReference.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
@@ -283,6 +285,8 @@ public class HomeActivity extends AppCompatActivity implements UserProfileFragme
                                         pastBattle.setResultPlayer1((String) dataSnapshot3.getValue());
                                     }
                                     mPastBattles.put(tournamentKey + battleKey, pastBattle);
+                                    Timber.d("History adding battle: " + mPastBattles.size());
+
                                 }
 
                             }
@@ -339,6 +343,19 @@ public class HomeActivity extends AppCompatActivity implements UserProfileFragme
             public void onCancelled(@NonNull DatabaseError databaseError) {
             }
         });
+        tournamentsReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Timber.d("History got all data");
+                Timber.d("History TOTAL: " + mPastBattles.size() + " battles");
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
         initUI();
         new Handler().postDelayed(new Runnable() {
             @Override
