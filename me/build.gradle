@@ -43,7 +43,7 @@ dependencies {
     implementation "com.google.firebase:firebase-database:19.2.1"
     implementation "com.google.firebase:firebase-dynamic-links:19.1.0"
 
-    //Google Location
+    compile 'com.scaledrone:scaledrone-java:0.6.0'
 
     //    implementation "com.google.android.gms:play-services-location:${play_services_version}"
     implementation "com.google.android.gms:play-services-maps:17.0.0"

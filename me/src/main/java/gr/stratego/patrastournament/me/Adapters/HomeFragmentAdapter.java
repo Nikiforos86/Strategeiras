@@ -7,6 +7,7 @@ import androidx.fragment.app.FragmentStatePagerAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
+import gr.stratego.patrastournament.me.Fragments.ChatFragment;
 import gr.stratego.patrastournament.me.Fragments.LiveRankingFragment;
 import gr.stratego.patrastournament.me.Fragments.LiveResultsFragment;
 import gr.stratego.patrastournament.me.Fragments.MapFragment;
@@ -20,20 +21,25 @@ public class HomeFragmentAdapter extends FragmentStatePagerAdapter {
     private LiveResultsFragment mLiveResultsFragment;
     private UserProfileFragment mUserFragment;
     private TournamentInfoFragment mTournamentFragment;
-    private MapFragment mMapFragment;
+    private ChatFragment mChatFragment;
+//    private MapFragment mMapFragment;
 
-    public HomeFragmentAdapter(FragmentManager fragmentManager, LiveRankingFragment liveRankingFragment, LiveResultsFragment liveResultsFragment, UserProfileFragment userFragment, TournamentInfoFragment tournamentFragment, MapFragment mapFragment) {
+    public HomeFragmentAdapter(FragmentManager fragmentManager, LiveRankingFragment liveRankingFragment,
+                               LiveResultsFragment liveResultsFragment, UserProfileFragment userFragment,
+                               TournamentInfoFragment tournamentFragment, ChatFragment chatFragment) {
         super(fragmentManager);
         this.mLiveRankingFragment = liveRankingFragment;
         this.mLiveResultsFragment = liveResultsFragment;
         this.mUserFragment = userFragment;
         this.mTournamentFragment = tournamentFragment;
-        this.mMapFragment = mapFragment;
+        this.mChatFragment = chatFragment;
+//        this.mMapFragment = mapFragment;
         this.fragments.add(mLiveRankingFragment);
         this.fragments.add(mLiveResultsFragment);
         this.fragments.add(mUserFragment);
         this.fragments.add(mTournamentFragment);
-        this.fragments.add(mMapFragment);
+        this.fragments.add(mChatFragment);
+//        this.fragments.add(mMapFragment);
     }
 
     @Override

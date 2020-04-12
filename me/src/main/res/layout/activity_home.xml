@@ -47,6 +47,7 @@
                 android:id="@+id/navigation"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                tools:layout_height="56dp"
                 android:background="?android:attr/windowBackground"
                 android:theme="@android:style/Theme.Holo.Light"
                 app:layout_constraintBottom_toBottomOf="parent"

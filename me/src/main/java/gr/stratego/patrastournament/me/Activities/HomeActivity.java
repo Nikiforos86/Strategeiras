@@ -5,6 +5,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -12,12 +13,15 @@ import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.RequestConfiguration;
 import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+
 import androidx.viewpager.widget.ViewPager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
@@ -34,10 +38,13 @@ import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 import com.google.firebase.dynamiclinks.PendingDynamicLinkData;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import gr.stratego.patrastournament.me.Adapters.HomeFragmentAdapter;
+import gr.stratego.patrastournament.me.Fragments.ChatFragment;
 import gr.stratego.patrastournament.me.Fragments.LiveRankingFragment;
 import gr.stratego.patrastournament.me.Fragments.LiveResultsFragment;
 import gr.stratego.patrastournament.me.Fragments.MapFragment;
@@ -64,6 +71,7 @@ public class HomeActivity extends AppCompatActivity implements UserProfileFragme
     private LiveRankingFragment mLiveRankingFragment;
     private LiveResultsFragment mLiveResultsFragment;
     private UserProfileFragment mUserProfileFragment;
+
     private AdView adView;
     private BottomNavigationView navigationView;
     private HomeFragmentAdapter mAdapter;
@@ -102,11 +110,16 @@ public class HomeActivity extends AppCompatActivity implements UserProfileFragme
                 mViewPager.setCurrentItem(3);
                 mRefreshLayout.setEnabled(false);
                 return true;
-            } else if (id == R.id.navigation_map) {
+            } else if (id == R.id.navigation_chat) {
                 mViewPager.setCurrentItem(4);
                 mRefreshLayout.setEnabled(true);
                 return true;
             }
+//            else if (id == R.id.navigation_map) {
+//                mViewPager.setCurrentItem(5);
+//                mRefreshLayout.setEnabled(true);
+//                return true;
+//            }
             return false;
         }
     };
@@ -116,12 +129,17 @@ public class HomeActivity extends AppCompatActivity implements UserProfileFragme
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+//        List<String> testDeviceIds = Arrays.asList("97F43D00DD6033E7C0B068F1839AD180");
+//        RequestConfiguration configuration =
+//                new RequestConfiguration.Builder().setTestDeviceIds(testDeviceIds).build();
+//        MobileAds.setRequestConfiguration(configuration);
+
         MobileAds.initialize(this, new OnInitializationCompleteListener() {
             @Override
             public void onInitializationComplete(InitializationStatus initializationStatus) {
                 adView = findViewById(R.id.adView);
                 adView.setVisibility(View.VISIBLE);
-                AdRequest adRequest = new AdRequest.Builder().build();
+                final AdRequest adRequest = new AdRequest.Builder().build();
                 adView.loadAd(adRequest);
                 adView.setAdListener(new AdListener() {
                     @Override
@@ -131,7 +149,7 @@ public class HomeActivity extends AppCompatActivity implements UserProfileFragme
 
                     @Override
                     public void onAdFailedToLoad(int errorCode) {
-                        Timber.d("onAdFailedToLoad "+errorCode);
+                        Timber.d("onAdFailedToLoad " + errorCode + " " + adRequest.isTestDevice(HomeActivity.this));
                     }
 
                     @Override
@@ -343,9 +361,9 @@ public class HomeActivity extends AppCompatActivity implements UserProfileFragme
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                for (Map.Entry<String, PastBattle> entry : mPastBattles.entrySet()) {
-                    Timber.d("-> " + entry.getValue());
-                }
+//                for (Map.Entry<String, PastBattle> entry : mPastBattles.entrySet()) {
+//                    Timber.d("-> " + entry.getValue());
+//                }
                 Timber.d("TOTAL: " + mPastBattles.size() + " battles");
             }
         }, 5000);
@@ -380,14 +398,14 @@ public class HomeActivity extends AppCompatActivity implements UserProfileFragme
             }
         }
 
-        if(playersFound != 2){
+        if (playersFound != 2) {
             return null;
         }
 
         // getAllPAstBattles has all past battles as a list
         for (PastBattle pastBattle : getAllPastBattles()) {
-            if((StringUtils.areEqual(firstPlayer, pastBattle.getPlayer1()) && StringUtils.areEqual(secondPlayer, pastBattle.getPlayer2()))
-                || (StringUtils.areEqual(firstPlayer, pastBattle.getPlayer2()) && StringUtils.areEqual(secondPlayer, pastBattle.getPlayer1()))){
+            if ((StringUtils.areEqual(firstPlayer, pastBattle.getPlayer1()) && StringUtils.areEqual(secondPlayer, pastBattle.getPlayer2()))
+                    || (StringUtils.areEqual(firstPlayer, pastBattle.getPlayer2()) && StringUtils.areEqual(secondPlayer, pastBattle.getPlayer1()))) {
                 pastBattlesBetweenThem.add(pastBattle);
             }
         }
@@ -440,9 +458,9 @@ public class HomeActivity extends AppCompatActivity implements UserProfileFragme
         mLiveResultsFragment = LiveResultsFragment.newInstance();
         mUserProfileFragment = UserProfileFragment.newInstance();
 
-        mAdapter = new HomeFragmentAdapter(getSupportFragmentManager(), mLiveRankingFragment, mLiveResultsFragment, mUserProfileFragment, TournamentInfoFragment.newInstance(), MapFragment.newInstance());
+        mAdapter = new HomeFragmentAdapter(getSupportFragmentManager(), mLiveRankingFragment, mLiveResultsFragment, mUserProfileFragment, TournamentInfoFragment.newInstance(), ChatFragment.newInstance());
         mViewPager.setAdapter(mAdapter);
-        mViewPager.setOffscreenPageLimit(4);
+        mViewPager.setOffscreenPageLimit(5);
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int i, float v, int i1) {
@@ -465,8 +483,11 @@ public class HomeActivity extends AppCompatActivity implements UserProfileFragme
                         navigationView.setSelectedItemId(R.id.navigation_dashboard);
                         break;
                     case 4:
-                        navigationView.setSelectedItemId(R.id.navigation_map);
+                        navigationView.setSelectedItemId(R.id.navigation_chat);
                         break;
+//                    case 5:
+//                        navigationView.setSelectedItemId(R.id.navigation_map);
+//                        break;
                 }
             }
 

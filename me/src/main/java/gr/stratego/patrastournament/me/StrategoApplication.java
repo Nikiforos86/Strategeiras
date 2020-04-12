@@ -3,7 +3,12 @@ package gr.stratego.patrastournament.me;
 import android.content.Context;
 import androidx.multidex.MultiDexApplication;
 
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.RequestConfiguration;
 import com.google.firebase.FirebaseApp;
+
+import java.util.Arrays;
+import java.util.List;
 
 import gr.stratego.patrastournament.me.Models.AppSettings;
 import gr.stratego.patrastournament.me.Models.User;
@@ -20,7 +25,6 @@ public class StrategoApplication extends MultiDexApplication {
     public void onCreate(){
         super.onCreate();
         FirebaseApp.initializeApp(this);
-
         initTimber();
         mContext = this;
     }

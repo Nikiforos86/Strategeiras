@@ -22,8 +22,8 @@
         android:title="@string/title_dashboard" />
 
     <item
-        android:id="@+id/navigation_map"
-        android:icon="@drawable/baseline_map_white_48"
-        android:title="@string/title_map" />
+        android:id="@+id/navigation_chat"
+        android:icon="@drawable/baseline_chat_black_24dp"
+        android:title="@string/title_chat" />
 
 </menu>
