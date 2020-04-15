@@ -277,7 +277,7 @@ public class HomeActivity extends AppCompatActivity implements UserProfileFragme
 
         tournamentsReference.addChildEventListener(new ChildEventListener() {
             @Override
-            public void onChildAdded(@NonNull final DataSnapshot dataSnapshot, @Nullable String s) {
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 final String tournamentKey = dataSnapshot.getKey();
                 final DatabaseReference tournamentRef = tournamentsReference.child(tournamentKey);
                 tournamentRef.addChildEventListener(new ChildEventListener() {
@@ -439,11 +439,13 @@ public class HomeActivity extends AppCompatActivity implements UserProfileFragme
         // getAllPAstBattles has all past battles as a list
         for (PastBattle pastBattle : getAllPastBattles()) {
 
-            InfoTournament infoTournament = mInfoTournament.get(pastBattle.getTournament());
-            pastBattle.setTournament(infoTournament.getTournamentName());
-
             if ((StringUtils.areEqual(firstPlayer, pastBattle.getPlayer1()) && StringUtils.areEqual(secondPlayer, pastBattle.getPlayer2()))
                     || (StringUtils.areEqual(firstPlayer, pastBattle.getPlayer2()) && StringUtils.areEqual(secondPlayer, pastBattle.getPlayer1()))) {
+
+                if (mInfoTournament.containsKey(pastBattle.getTournament())){
+                    InfoTournament infoTournament = mInfoTournament.get(pastBattle.getTournament());
+                    pastBattle.setTournament(infoTournament.getTournamentName());
+                }
                 pastBattlesBetweenThem.add(pastBattle);
             }
         }
