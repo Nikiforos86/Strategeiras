@@ -52,6 +52,7 @@ import gr.stratego.patrastournament.me.Fragments.TournamentInfoFragment;
 import gr.stratego.patrastournament.me.Fragments.UserProfileFragment;
 import gr.stratego.patrastournament.me.Models.AppSettings;
 import gr.stratego.patrastournament.me.Models.BattleResultModel;
+import gr.stratego.patrastournament.me.Models.InfoTournament;
 import gr.stratego.patrastournament.me.Models.PastBattle;
 import gr.stratego.patrastournament.me.Models.RankingModel;
 import gr.stratego.patrastournament.me.Models.User;
@@ -83,6 +84,7 @@ public class HomeActivity extends AppCompatActivity implements UserProfileFragme
     private String mdlMail;
     private String mdlPin;
     private HashMap<String, PastBattle> mPastBattles = new HashMap<>();
+    private HashMap<String, InfoTournament> mInfoTournament = new HashMap<>();
     ArrayList<RankingModel> mRankingList = new ArrayList<>();
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -286,22 +288,54 @@ public class HomeActivity extends AppCompatActivity implements UserProfileFragme
                         battleRef.addChildEventListener(new ChildEventListener() {
                             @Override
                             public void onChildAdded(@NonNull DataSnapshot dataSnapshot3, @Nullable String s2) {
-                                if (mPastBattles.containsKey(tournamentKey + battleKey)) {
-                                    PastBattle pastBattle = mPastBattles.get(tournamentKey + battleKey);
-                                    if (StringUtils.isNotNullOrEmpty(dataSnapshot3.getKey())) {
-                                        pastBattle.setPlayer2(dataSnapshot3.getKey());
-                                        pastBattle.setResultPlayer2((String) dataSnapshot3.getValue());
-                                    }
 
-                                } else {
-                                    PastBattle pastBattle = new PastBattle();
-                                    pastBattle.setTournament(tournamentKey);
-                                    if (StringUtils.isNotNullOrEmpty(dataSnapshot3.getKey())) {
-                                        pastBattle.setPlayer1(dataSnapshot3.getKey());
-                                        pastBattle.setResultPlayer1((String) dataSnapshot3.getValue());
+                                if (battleKey.equals("info")) {
+                                    if (mInfoTournament.containsKey(tournamentKey)) {
+                                        InfoTournament infoTournament = mInfoTournament.get(tournamentKey);
+                                        if (dataSnapshot3.getKey().equals("tournamentName")) {
+                                            infoTournament.setTournamentName(dataSnapshot3.getValue().toString());
+                                        }
+                                        else if (dataSnapshot3.getKey().equals("place")) {
+                                            infoTournament.setPlace(dataSnapshot3.getValue().toString());
+                                        }
+                                        else if (dataSnapshot3.getKey().equals("date")) {
+                                            infoTournament.setDate(dataSnapshot3.getValue().toString());
+                                        }
                                     }
-                                    mPastBattles.put(tournamentKey + battleKey, pastBattle);
+                                    else {
+                                        InfoTournament infoTournament = new InfoTournament();
+                                        if (dataSnapshot3.getKey().equals("tournamentName")) {
+                                            infoTournament.setTournamentName(dataSnapshot3.getValue().toString());
+                                        }
+                                        else if (dataSnapshot3.getKey().equals("place")) {
+                                            infoTournament.setPlace(dataSnapshot3.getValue().toString());
+                                        }
+                                        else if (dataSnapshot3.getKey().equals("date")) {
+                                            infoTournament.setDate(dataSnapshot3.getValue().toString());
+                                        }
+                                        mInfoTournament.put(tournamentKey,infoTournament);
+                                    }
                                 }
+                                else {
+                                    if (mPastBattles.containsKey(tournamentKey + battleKey)) {
+                                        PastBattle pastBattle = mPastBattles.get(tournamentKey + battleKey);
+                                        if (StringUtils.isNotNullOrEmpty(dataSnapshot3.getKey())) {
+                                            pastBattle.setPlayer2(dataSnapshot3.getKey());
+                                            pastBattle.setResultPlayer2((String) dataSnapshot3.getValue());
+                                        }
+
+                                    } else {
+                                        PastBattle pastBattle = new PastBattle();
+                                        pastBattle.setTournament(tournamentKey);
+                                        if (StringUtils.isNotNullOrEmpty(dataSnapshot3.getKey())) {
+                                            pastBattle.setPlayer1(dataSnapshot3.getKey());
+                                            pastBattle.setResultPlayer1((String) dataSnapshot3.getValue());
+                                        }
+                                        mPastBattles.put(tournamentKey + battleKey, pastBattle);
+                                    }
+                                }
+
+
 
                             }
 
@@ -404,8 +438,14 @@ public class HomeActivity extends AppCompatActivity implements UserProfileFragme
 
         // getAllPAstBattles has all past battles as a list
         for (PastBattle pastBattle : getAllPastBattles()) {
+
             if ((StringUtils.areEqual(firstPlayer, pastBattle.getPlayer1()) && StringUtils.areEqual(secondPlayer, pastBattle.getPlayer2()))
                     || (StringUtils.areEqual(firstPlayer, pastBattle.getPlayer2()) && StringUtils.areEqual(secondPlayer, pastBattle.getPlayer1()))) {
+
+                if (mInfoTournament.containsKey(pastBattle.getTournament())){
+                    InfoTournament infoTournament = mInfoTournament.get(pastBattle.getTournament());
+                    pastBattle.setTournament(infoTournament.getTournamentName());
+                }
                 pastBattlesBetweenThem.add(pastBattle);
             }
         }
