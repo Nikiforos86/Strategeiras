@@ -42,6 +42,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import gr.stratego.patrastournament.me.Adapters.HomeFragmentAdapter;
 import gr.stratego.patrastournament.me.Fragments.ChatFragment;
@@ -83,8 +84,10 @@ public class HomeActivity extends AppCompatActivity implements UserProfileFragme
     private DatabaseReference mDatabase;
     private String mdlMail;
     private String mdlPin;
-    private HashMap<String, PastBattle> mPastBattles = new HashMap<>();
-    private HashMap<String, InfoTournament> mInfoTournament = new HashMap<>();
+
+    private ConcurrentHashMap<String, PastBattle> mPastBattles = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, InfoTournament> mInfoTournament = new ConcurrentHashMap<>();
+
     ArrayList<RankingModel> mRankingList = new ArrayList<>();
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -275,6 +278,7 @@ public class HomeActivity extends AppCompatActivity implements UserProfileFragme
             }
         });
 
+        Timber.d("History get all data");
         tournamentsReference.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
@@ -315,8 +319,8 @@ public class HomeActivity extends AppCompatActivity implements UserProfileFragme
                                         }
                                         mInfoTournament.put(tournamentKey,infoTournament);
                                     }
-                                }
-                                else {
+
+                                } else {
                                     if (mPastBattles.containsKey(tournamentKey + battleKey)) {
                                         PastBattle pastBattle = mPastBattles.get(tournamentKey + battleKey);
                                         if (StringUtils.isNotNullOrEmpty(dataSnapshot3.getKey())) {
@@ -391,6 +395,19 @@ public class HomeActivity extends AppCompatActivity implements UserProfileFragme
             public void onCancelled(@NonNull DatabaseError databaseError) {
             }
         });
+        tournamentsReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Timber.d("History got all data");
+                Timber.d("History TOTAL: " + mPastBattles.size() + " battles");
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
         initUI();
         new Handler().postDelayed(new Runnable() {
             @Override
