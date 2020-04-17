@@ -125,8 +125,5 @@ public class SharedPreferencesUtil {
      */
     public static void deleteUserData() {
 
-        SharedPreferencesUtil.saveSharedPreference("", SharedPreferencesUtil.UserColor, SharedPreferencesUtil.UserColor);
-
-
     }
 }

@@ -108,14 +108,7 @@ public class ChatFragment extends BaseStrategoFragment implements RoomListener {
 
                 editText.setTextColor(textColor);
 
-                MemberData data = null;
-                if (StrategoApplication.getCurrentUser() != null) {
-                    data = new MemberData(StrategoApplication.getCurrentUser().getDisplayName(), getRandomColor());
-                } else {
-                    data = new MemberData("Unknown user", getRandomColor());
-                }
-
-                scaledrone = new Scaledrone(channelID, data);
+                scaledrone = new Scaledrone(channelID);
                 scaledrone.connect(new Listener() {
                     @Override
                     public void onOpen() {
