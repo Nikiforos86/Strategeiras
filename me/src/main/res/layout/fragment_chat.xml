@@ -42,7 +42,9 @@
             android:padding="12dp"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
-            android:background="@drawable/baseline_send_black_24dp"
+            android:tint="#FFa500"
+            android:src="@drawable/baseline_send_black_24dp"
+            android:background="@null"
             />
     </LinearLayout>
 </LinearLayout>
