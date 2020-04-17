@@ -12,7 +12,6 @@ import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +19,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 import gr.stratego.patrastournament.me.Adapters.RankingRecyclerAdapter;
 import gr.stratego.patrastournament.me.Models.BattleResultModel;
@@ -32,6 +32,11 @@ import gr.stratego.patrastournament.me.Utils.CollectionUtils;
 import gr.stratego.patrastournament.me.Utils.GeneralUtils;
 import gr.stratego.patrastournament.me.Utils.SharedPreferencesUtil;
 import gr.stratego.patrastournament.me.Utils.StringUtils;
+import rx.Observable;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.schedulers.Schedulers;
 
 
 public class UserProfileFragment extends BaseStrategoFragment {
@@ -60,10 +65,10 @@ public class UserProfileFragment extends BaseStrategoFragment {
 
     private Button mLogin;
     private Button mLogout;
-
     private String mTournamentTitle;
-
     private RecyclerView mRecyclerView;
+
+    private Subscription mSubscription;
 
     public UserProfileFragment() {
         // Required empty public constructor
@@ -163,7 +168,7 @@ public class UserProfileFragment extends BaseStrategoFragment {
                         mLeftName.setText(battleResult.getLeftName());
                         mRightName.setText(battleResult.getRightName());
                         mScore.setText(battleResult.getScore());
-                        setupPastBattles(battleResult);
+                        setupPastBattlesTimer(battleResult);
                         break;
                     }
                 }
@@ -185,11 +190,25 @@ public class UserProfileFragment extends BaseStrategoFragment {
         updateUI();
     }
 
+
+    private void setupPastBattlesTimer(final BattleResultModel battleResult) {
+        if(mSubscription != null){
+            mSubscription.unsubscribe();
+        }
+        mSubscription = Observable.interval(5, TimeUnit.SECONDS)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<Long>() {
+                    @Override
+                    public void call(Long aLong) {
+                        setupPastBattles(battleResult);
+                    }
+                });
+
+    }
+
     private void setupPastBattles(final BattleResultModel battleResult) {
-//        new Handler().postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-                ArrayList<Object> playersPastBattles = mListener.findPastBattles(battleResult);
+                ArrayList<Object> playersPastBattles = mListener.findPastBattles(battleResult, mSubscription);
                 if(CollectionUtils.isNotEmpty(playersPastBattles)) {
 					
                     if(StrategoApplication.getCurrentUser() != null){
@@ -237,8 +256,6 @@ public class UserProfileFragment extends BaseStrategoFragment {
                 } else {
                     mHistoryLayout.setVisibility(View.GONE);
                 }
-//            }
-//        }, 5000);
     }
 
     @Override
@@ -347,6 +364,6 @@ public class UserProfileFragment extends BaseStrategoFragment {
 
     public interface OnUserProfileListener {
         void onLogin(String mail, String pin);
-        ArrayList<Object> findPastBattles(BattleResultModel battleResult);
+        ArrayList<Object> findPastBattles(BattleResultModel battleResult, Subscription subscription);
     }
 }

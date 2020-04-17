@@ -66,6 +66,7 @@ import gr.stratego.patrastournament.me.Utils.CollectionUtils;
 import gr.stratego.patrastournament.me.Utils.GeneralUtils;
 import gr.stratego.patrastournament.me.Utils.SharedPreferencesUtil;
 import gr.stratego.patrastournament.me.Utils.StringUtils;
+import rx.Subscription;
 import timber.log.Timber;
 
 public class HomeActivity extends AppCompatActivity implements UserProfileFragment.OnUserProfileListener {
@@ -84,6 +85,7 @@ public class HomeActivity extends AppCompatActivity implements UserProfileFragme
     private DatabaseReference mDatabase;
     private String mdlMail;
     private String mdlPin;
+    private int totalBattlesParsed;
 
     private ConcurrentHashMap<String, PastBattle> mPastBattles = new ConcurrentHashMap<>();
     private ConcurrentHashMap<String, InfoTournament> mInfoTournament = new ConcurrentHashMap<>();
@@ -278,69 +280,84 @@ public class HomeActivity extends AppCompatActivity implements UserProfileFragme
             }
         });
 
-        Timber.d("History get all data");
-        tournamentsReference.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                final String tournamentKey = dataSnapshot.getKey();
-                final DatabaseReference tournamentRef = tournamentsReference.child(tournamentKey);
-                tournamentRef.addChildEventListener(new ChildEventListener() {
+        new Thread(new Runnable() {
+            public void run() {
+
+                Timber.d("History get all data");
+                tournamentsReference.addChildEventListener(new ChildEventListener() {
                     @Override
-                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot2, @Nullable String s2) {
-                        final String battleKey = dataSnapshot2.getKey();
-                        final DatabaseReference battleRef = tournamentRef.child(battleKey);
-                        battleRef.addChildEventListener(new ChildEventListener() {
+                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                        final String tournamentKey = dataSnapshot.getKey();
+                        final DatabaseReference tournamentRef = tournamentsReference.child(tournamentKey);
+                        tournamentRef.addChildEventListener(new ChildEventListener() {
                             @Override
-                            public void onChildAdded(@NonNull DataSnapshot dataSnapshot3, @Nullable String s2) {
+                            public void onChildAdded(@NonNull DataSnapshot dataSnapshot2, @Nullable String s2) {
+                                final String battleKey = dataSnapshot2.getKey();
+                                final DatabaseReference battleRef = tournamentRef.child(battleKey);
+                                battleRef.addChildEventListener(new ChildEventListener() {
+                                    @Override
+                                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot3, @Nullable String s2) {
 
-                                if (battleKey.equals("info")) {
-                                    if (mInfoTournament.containsKey(tournamentKey)) {
-                                        InfoTournament infoTournament = mInfoTournament.get(tournamentKey);
-                                        if (dataSnapshot3.getKey().equals("tournamentName")) {
-                                            infoTournament.setTournamentName(dataSnapshot3.getValue().toString());
+                                        if (battleKey.equals("info")) {
+                                            if (mInfoTournament.containsKey(tournamentKey)) {
+                                                InfoTournament infoTournament = mInfoTournament.get(tournamentKey);
+                                                if (dataSnapshot3.getKey().equals("tournamentName")) {
+                                                    infoTournament.setTournamentName(dataSnapshot3.getValue().toString());
+                                                } else if (dataSnapshot3.getKey().equals("place")) {
+                                                    infoTournament.setPlace(dataSnapshot3.getValue().toString());
+                                                } else if (dataSnapshot3.getKey().equals("date")) {
+                                                    infoTournament.setDate(dataSnapshot3.getValue().toString());
+                                                }
+                                            } else {
+                                                InfoTournament infoTournament = new InfoTournament();
+                                                if (dataSnapshot3.getKey().equals("tournamentName")) {
+                                                    infoTournament.setTournamentName(dataSnapshot3.getValue().toString());
+                                                } else if (dataSnapshot3.getKey().equals("place")) {
+                                                    infoTournament.setPlace(dataSnapshot3.getValue().toString());
+                                                } else if (dataSnapshot3.getKey().equals("date")) {
+                                                    infoTournament.setDate(dataSnapshot3.getValue().toString());
+                                                }
+                                                mInfoTournament.put(tournamentKey, infoTournament);
+                                            }
+
+                                        } else {
+                                            if (mPastBattles.containsKey(tournamentKey + battleKey)) {
+                                                PastBattle pastBattle = mPastBattles.get(tournamentKey + battleKey);
+                                                if (StringUtils.isNotNullOrEmpty(dataSnapshot3.getKey())) {
+                                                    pastBattle.setPlayer2(dataSnapshot3.getKey());
+                                                    pastBattle.setResultPlayer2((String) dataSnapshot3.getValue());
+                                                }
+//                                                Timber.d("Added battle "+pastBattle.toString());
+                                            } else {
+                                                PastBattle pastBattle = new PastBattle();
+                                                pastBattle.setTournament(tournamentKey);
+                                                if (StringUtils.isNotNullOrEmpty(dataSnapshot3.getKey())) {
+                                                    pastBattle.setPlayer1(dataSnapshot3.getKey());
+                                                    pastBattle.setResultPlayer1((String) dataSnapshot3.getValue());
+                                                }
+                                                mPastBattles.put(tournamentKey + battleKey, pastBattle);
+                                            }
                                         }
-                                        else if (dataSnapshot3.getKey().equals("place")) {
-                                            infoTournament.setPlace(dataSnapshot3.getValue().toString());
-                                        }
-                                        else if (dataSnapshot3.getKey().equals("date")) {
-                                            infoTournament.setDate(dataSnapshot3.getValue().toString());
-                                        }
+
+
                                     }
-                                    else {
-                                        InfoTournament infoTournament = new InfoTournament();
-                                        if (dataSnapshot3.getKey().equals("tournamentName")) {
-                                            infoTournament.setTournamentName(dataSnapshot3.getValue().toString());
-                                        }
-                                        else if (dataSnapshot3.getKey().equals("place")) {
-                                            infoTournament.setPlace(dataSnapshot3.getValue().toString());
-                                        }
-                                        else if (dataSnapshot3.getKey().equals("date")) {
-                                            infoTournament.setDate(dataSnapshot3.getValue().toString());
-                                        }
-                                        mInfoTournament.put(tournamentKey,infoTournament);
+
+                                    @Override
+                                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                                     }
 
-                                } else {
-                                    if (mPastBattles.containsKey(tournamentKey + battleKey)) {
-                                        PastBattle pastBattle = mPastBattles.get(tournamentKey + battleKey);
-                                        if (StringUtils.isNotNullOrEmpty(dataSnapshot3.getKey())) {
-                                            pastBattle.setPlayer2(dataSnapshot3.getKey());
-                                            pastBattle.setResultPlayer2((String) dataSnapshot3.getValue());
-                                        }
-
-                                    } else {
-                                        PastBattle pastBattle = new PastBattle();
-                                        pastBattle.setTournament(tournamentKey);
-                                        if (StringUtils.isNotNullOrEmpty(dataSnapshot3.getKey())) {
-                                            pastBattle.setPlayer1(dataSnapshot3.getKey());
-                                            pastBattle.setResultPlayer1((String) dataSnapshot3.getValue());
-                                        }
-                                        mPastBattles.put(tournamentKey + battleKey, pastBattle);
+                                    @Override
+                                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
                                     }
-                                }
 
+                                    @Override
+                                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                                    }
 
-
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                                    }
+                                });
                             }
 
                             @Override
@@ -378,58 +395,29 @@ public class HomeActivity extends AppCompatActivity implements UserProfileFragme
                     }
                 });
             }
-
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-            }
-
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-            }
-
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-            }
-        });
-        tournamentsReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Timber.d("History got all data");
-                Timber.d("History TOTAL: " + mPastBattles.size() + " battles");
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
+        }).start();
 
         initUI();
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-//                for (Map.Entry<String, PastBattle> entry : mPastBattles.entrySet()) {
-//                    Timber.d("-> " + entry.getValue());
-//                }
-                Timber.d("TOTAL: " + mPastBattles.size() + " battles");
-            }
-        }, 5000);
     }
 
-    private ArrayList<PastBattle> getAllPastBattles() {
+    private ArrayList<PastBattle> getAllPastBattles(Subscription subscription) {
         ArrayList<PastBattle> pastBattles = new ArrayList<>();
         for (Map.Entry<String, PastBattle> entry : mPastBattles.entrySet()) {
             pastBattles.add(entry.getValue());
+        }
+
+        Timber.d("Total: "+mPastBattles.size());
+        if(mPastBattles.size() > 0){
+            if(totalBattlesParsed == mPastBattles.size()){
+                subscription.unsubscribe();
+            }
+            totalBattlesParsed = mPastBattles.size();
         }
         return pastBattles;
     }
 
     @Override
-    public ArrayList<Object> findPastBattles(BattleResultModel battleResult) {
+    public ArrayList<Object> findPastBattles(BattleResultModel battleResult, Subscription subscription) {
         ArrayList<Object> pastBattlesBetweenThem = new ArrayList<>();
 
         int playersFound = 0;
@@ -454,12 +442,12 @@ public class HomeActivity extends AppCompatActivity implements UserProfileFragme
         }
 
         // getAllPAstBattles has all past battles as a list
-        for (PastBattle pastBattle : getAllPastBattles()) {
+        for (PastBattle pastBattle : getAllPastBattles(subscription)) {
 
             if ((StringUtils.areEqual(firstPlayer, pastBattle.getPlayer1()) && StringUtils.areEqual(secondPlayer, pastBattle.getPlayer2()))
                     || (StringUtils.areEqual(firstPlayer, pastBattle.getPlayer2()) && StringUtils.areEqual(secondPlayer, pastBattle.getPlayer1()))) {
 
-                if (mInfoTournament.containsKey(pastBattle.getTournament())){
+                if (mInfoTournament.containsKey(pastBattle.getTournament())) {
                     InfoTournament infoTournament = mInfoTournament.get(pastBattle.getTournament());
                     pastBattle.setTournament(infoTournament.getTournamentName());
                 }

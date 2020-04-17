@@ -94,20 +94,20 @@ public class ChatFragment extends BaseStrategoFragment implements RoomListener {
             }
         });
 
-        int textColor = Color.BLACK;
-        int accentColor = Color.BLACK;
-        if (StrategoApplication.getAppSettings() != null
-                && StringUtils.isNotNullOrEmpty(StrategoApplication.getAppSettings().getDarkTextColor())
-                && StringUtils.isNotNullOrEmpty(StrategoApplication.getAppSettings().getAccentColor())) {
-            textColor = Color.parseColor(StrategoApplication.getAppSettings().getDarkTextColor());
-            accentColor = Color.parseColor(StrategoApplication.getAppSettings().getAccentColor());
-        }
 
-        editText.setTextColor(textColor);
 
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
+                int textColor = Color.WHITE;
+
+                if (StrategoApplication.getAppSettings() != null
+                        && StringUtils.isNotNullOrEmpty(StrategoApplication.getAppSettings().getLightTextColor())) {
+                    textColor = Color.parseColor(StrategoApplication.getAppSettings().getLightTextColor());
+                }
+
+                editText.setTextColor(textColor);
+
                 MemberData data = null;
                 if (StrategoApplication.getCurrentUser() != null) {
                     data = new MemberData(StrategoApplication.getCurrentUser().getDisplayName(), getRandomColor());
@@ -175,18 +175,7 @@ public class ChatFragment extends BaseStrategoFragment implements RoomListener {
 
         final ObjectMapper mapper = new ObjectMapper();
         try {
-
-//            MemberData data = null;
-//            if(receivedMessage.getMember() != null){
-//                data = mapper.treeToValue(receivedMessage.getMember().getClientData(), MemberData.class);
-//            } else {
-//                data = new MemberData();
-//            }
-
-//            boolean belongsToCurrentUser = receivedMessage.getClientID().equals(scaledrone.getClientID());
-//            final Message message = new Message(receivedMessage.getData().asText(), data, belongsToCurrentUser);
             final Message message = (Message) JsonUtils.convertToDesiredObject(receivedMessage.getData().asText(), Message.class);
-
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {

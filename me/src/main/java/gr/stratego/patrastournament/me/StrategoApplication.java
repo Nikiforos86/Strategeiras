@@ -6,6 +6,7 @@ import androidx.multidex.MultiDexApplication;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.RequestConfiguration;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Arrays;
 import java.util.List;
@@ -25,6 +26,8 @@ public class StrategoApplication extends MultiDexApplication {
     public void onCreate(){
         super.onCreate();
         FirebaseApp.initializeApp(this);
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+
         initTimber();
         mContext = this;
     }
