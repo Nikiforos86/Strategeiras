@@ -3,14 +3,25 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:tools="http://schemas.android.com/tools"
-    android:paddingVertical="18dp"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp"
     android:paddingLeft="16dp"
     android:paddingRight="56dp"
     android:clipToPadding="false">
 
+    <View
+        android:id="@+id/bubble"
+        android:layout_alignParentLeft="true"
+        android:scaleType="centerInside"
+        android:background="@drawable/index_gold_circle"
+        android:layout_width="24dp"
+        android:layout_height="24dp" />
+
     <TextView
         android:id="@+id/name"
         android:layout_marginLeft="16dp"
+        android:layout_toRightOf="@+id/bubble"
+        android:layout_alignTop="@+id/bubble"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingBottom="4dp"

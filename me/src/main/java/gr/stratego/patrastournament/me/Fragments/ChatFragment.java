@@ -34,12 +34,14 @@ import gr.stratego.patrastournament.me.Models.Message;
 import gr.stratego.patrastournament.me.R;
 import gr.stratego.patrastournament.me.StrategoApplication;
 import gr.stratego.patrastournament.me.Utils.GeneralUtils;
+import gr.stratego.patrastournament.me.Utils.JsonUtils;
+import gr.stratego.patrastournament.me.Utils.SharedPreferencesUtil;
 import gr.stratego.patrastournament.me.Utils.StringUtils;
 import timber.log.Timber;
 
 public class ChatFragment extends BaseStrategoFragment implements RoomListener {
 
-    private String channelID = "Ei17UUzRvYa0YmJA";
+    private String channelID = "oqzR8mHtOuJeLb9b";
     private Room mRoom;
     private String roomName = "observable-Strategeiras";
     private EditText editText;
@@ -173,15 +175,18 @@ public class ChatFragment extends BaseStrategoFragment implements RoomListener {
 
         final ObjectMapper mapper = new ObjectMapper();
         try {
-            MemberData data = null;
-            if(receivedMessage.getMember() != null){
-                data = mapper.treeToValue(receivedMessage.getMember().getClientData(), MemberData.class);
-            } else {
-                data = new MemberData();
-            }
 
-            boolean belongsToCurrentUser = receivedMessage.getClientID().equals(scaledrone.getClientID());
-            final Message message = new Message(receivedMessage.getData().asText(), data, belongsToCurrentUser);
+//            MemberData data = null;
+//            if(receivedMessage.getMember() != null){
+//                data = mapper.treeToValue(receivedMessage.getMember().getClientData(), MemberData.class);
+//            } else {
+//                data = new MemberData();
+//            }
+
+//            boolean belongsToCurrentUser = receivedMessage.getClientID().equals(scaledrone.getClientID());
+//            final Message message = new Message(receivedMessage.getData().asText(), data, belongsToCurrentUser);
+            final Message message = (Message) JsonUtils.convertToDesiredObject(receivedMessage.getData().asText(), Message.class);
+
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -195,9 +200,25 @@ public class ChatFragment extends BaseStrategoFragment implements RoomListener {
     }
 
     public void sendMessage(View view) {
-        String message = editText.getText().toString();
-        if (message.length() > 0) {
-            scaledrone.publish(roomName, message);
+        String textMessage = editText.getText().toString();
+        if (textMessage.length() > 0) {
+            String username = "Unknown user";
+            String userColor = SharedPreferencesUtil.loadSharedPreference(SharedPreferencesUtil.UserColor, SharedPreferencesUtil.UserColor);
+
+            if (StrategoApplication.getCurrentUser() != null) {
+                username = StrategoApplication.getCurrentUser().getDisplayName();
+            }
+
+            if(StringUtils.isNullOrEmpty(userColor)){
+                userColor = getRandomColor();
+            }
+
+            Message sendingMessage = new Message();
+            sendingMessage.setText(textMessage);
+            sendingMessage.setUsername(username);
+            sendingMessage.setColor(userColor);
+
+            scaledrone.publish(roomName, JsonUtils.convertJsonObjectToString(sendingMessage));
             editText.getText().clear();
         }
     }
@@ -208,6 +229,8 @@ public class ChatFragment extends BaseStrategoFragment implements RoomListener {
         while (sb.length() < 7) {
             sb.append(Integer.toHexString(r.nextInt()));
         }
-        return sb.toString().substring(0, 7);
+        String color = sb.toString().substring(0, 7);
+        SharedPreferencesUtil.saveSharedPreference(color, SharedPreferencesUtil.UserColor, SharedPreferencesUtil.UserColor);
+        return color;
     }
 }

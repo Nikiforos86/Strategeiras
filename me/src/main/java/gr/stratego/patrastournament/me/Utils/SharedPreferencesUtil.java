@@ -11,6 +11,7 @@ public class SharedPreferencesUtil {
 
     public static final String UserId = PACKAGE+"UserId";
     public static final String UserLogged = PACKAGE+"UserLogged";
+    public static final String UserColor = PACKAGE+"UserColor";
 //    public static final
 
     public static void saveSharedPreference(String valueToSave, String dir, String fileName) {
@@ -123,6 +124,9 @@ public class SharedPreferencesUtil {
      * This is used is order to delete every user data we have. It's used is user's logout.
      */
     public static void deleteUserData() {
+
+        SharedPreferencesUtil.saveSharedPreference("", SharedPreferencesUtil.UserColor, SharedPreferencesUtil.UserColor);
+
 
     }
 }

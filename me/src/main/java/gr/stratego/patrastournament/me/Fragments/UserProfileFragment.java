@@ -141,6 +141,7 @@ public class UserProfileFragment extends BaseStrategoFragment {
             public void onClick(View v) {
                 SharedPreferencesUtil.saveSharedPreference(false, SharedPreferencesUtil.UserLogged, SharedPreferencesUtil.UserLogged);
                 SharedPreferencesUtil.saveSharedPreference(null, SharedPreferencesUtil.UserId, SharedPreferencesUtil.UserId);
+                SharedPreferencesUtil.saveSharedPreference("", SharedPreferencesUtil.UserColor, SharedPreferencesUtil.UserColor);
                 updateUI();
             }
         });
