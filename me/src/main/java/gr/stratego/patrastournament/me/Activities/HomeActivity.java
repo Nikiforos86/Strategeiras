@@ -1,5 +1,6 @@
 package gr.stratego.patrastournament.me.Activities;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
@@ -24,6 +25,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -101,10 +103,12 @@ public class HomeActivity extends AppCompatActivity implements UserProfileFragme
             if (id == R.id.navigation_live_results) {
                 mViewPager.setCurrentItem(0);
                 mRefreshLayout.setEnabled(true);
+                closeKeyboard();
                 return true;
             } else if (id == R.id.navigation_live_round) {
                 mViewPager.setCurrentItem(1);
                 mRefreshLayout.setEnabled(true);
+                closeKeyboard();
                 return true;
             } else if (id == R.id.navigation_home) {
                 mViewPager.setCurrentItem(2);
@@ -112,21 +116,19 @@ public class HomeActivity extends AppCompatActivity implements UserProfileFragme
                 if (mUserProfileFragment != null) {
                     mUserProfileFragment.updateUI();
                 }
+                closeKeyboard();
                 return true;
             } else if (id == R.id.navigation_dashboard) {
                 mViewPager.setCurrentItem(3);
                 mRefreshLayout.setEnabled(false);
+                closeKeyboard();
                 return true;
             } else if (id == R.id.navigation_chat) {
                 mViewPager.setCurrentItem(4);
                 mRefreshLayout.setEnabled(false);
+                closeKeyboard();
                 return true;
             }
-//            else if (id == R.id.navigation_map) {
-//                mViewPager.setCurrentItem(5);
-//                mRefreshLayout.setEnabled(true);
-//                return true;
-//            }
             return false;
         }
     };
@@ -282,7 +284,6 @@ public class HomeActivity extends AppCompatActivity implements UserProfileFragme
 
         new Thread(new Runnable() {
             public void run() {
-
                 Timber.d("History get all data");
                 tournamentsReference.addChildEventListener(new ChildEventListener() {
                     @Override
@@ -706,10 +707,16 @@ public class HomeActivity extends AppCompatActivity implements UserProfileFragme
                 return;
             }
         }
-        Toast.makeText(this, "There is no user with those data", Toast.LENGTH_SHORT).show();
-
-
+        Toast.makeText(this, "There is no user with those credentials", Toast.LENGTH_SHORT).show();
     }
 
+
+    public void closeKeyboard() {
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        View view = findViewById(android.R.id.content);
+        if (view != null) {
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+    }
 
 }
