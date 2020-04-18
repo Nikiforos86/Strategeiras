@@ -23,6 +23,7 @@ import androidx.viewpager.widget.ViewPager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -76,6 +77,7 @@ public class HomeActivity extends AppCompatActivity implements UserProfileFragme
     private LiveRankingFragment mLiveRankingFragment;
     private LiveResultsFragment mLiveResultsFragment;
     private UserProfileFragment mUserProfileFragment;
+    private ChatFragment mChatFragment;
 
     private AdView adView;
     private BottomNavigationView navigationView;
@@ -503,8 +505,9 @@ public class HomeActivity extends AppCompatActivity implements UserProfileFragme
         mLiveRankingFragment = LiveRankingFragment.newInstance();
         mLiveResultsFragment = LiveResultsFragment.newInstance();
         mUserProfileFragment = UserProfileFragment.newInstance();
+        mChatFragment = ChatFragment.newInstance();
 
-        mAdapter = new HomeFragmentAdapter(getSupportFragmentManager(), mLiveRankingFragment, mLiveResultsFragment, mUserProfileFragment, TournamentInfoFragment.newInstance(), ChatFragment.newInstance());
+        mAdapter = new HomeFragmentAdapter(getSupportFragmentManager(), mLiveRankingFragment, mLiveResultsFragment, mUserProfileFragment, TournamentInfoFragment.newInstance(), mChatFragment );
         mViewPager.setAdapter(mAdapter);
         mViewPager.setOffscreenPageLimit(5);
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -710,7 +713,6 @@ public class HomeActivity extends AppCompatActivity implements UserProfileFragme
         Toast.makeText(this, "There is no user with those credentials", Toast.LENGTH_SHORT).show();
     }
 
-
     public void closeKeyboard() {
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         View view = findViewById(android.R.id.content);
@@ -718,5 +720,4 @@ public class HomeActivity extends AppCompatActivity implements UserProfileFragme
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
     }
-
 }

@@ -8,6 +8,9 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.os.Handler;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,6 +40,8 @@ import gr.stratego.patrastournament.me.Utils.GeneralUtils;
 import gr.stratego.patrastournament.me.Utils.JsonUtils;
 import gr.stratego.patrastournament.me.Utils.SharedPreferencesUtil;
 import gr.stratego.patrastournament.me.Utils.StringUtils;
+import gr.stratego.patrastournament.me.listeners.EditTextImeBackListener;
+import gr.stratego.patrastournament.me.views.EditTextBackEvent;
 import timber.log.Timber;
 
 public class ChatFragment extends BaseStrategoFragment implements RoomListener {
@@ -44,7 +49,7 @@ public class ChatFragment extends BaseStrategoFragment implements RoomListener {
     private String channelID = "oqzR8mHtOuJeLb9b";
     private Room mRoom;
     private String roomName = "observable-Strategeiras";
-    private EditText editText;
+    private EditTextBackEvent editText;
     private View sendButton;
     private ListView messagesView;
     private Scaledrone scaledrone;
@@ -86,6 +91,25 @@ public class ChatFragment extends BaseStrategoFragment implements RoomListener {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         messagesView = (ListView) view.findViewById(R.id.messages_view);
         editText = view.findViewById(R.id.editText);
+        editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if(hasFocus){
+                    messagesView.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            messagesView.setSelection(messagesView.getCount() - 1);
+                        }
+                    }, 500);
+                }
+            }
+        });
+        editText.setOnEditTextImeBackListener(new EditTextImeBackListener() {
+            @Override
+            public void onImeBack(EditTextBackEvent ctrl, String text) {
+                editText.clearFocus();
+            }
+        });
         sendButton = view.findViewById(R.id.send_button);
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -93,8 +117,6 @@ public class ChatFragment extends BaseStrategoFragment implements RoomListener {
                 sendMessage(v);
             }
         });
-
-
 
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -107,6 +129,7 @@ public class ChatFragment extends BaseStrategoFragment implements RoomListener {
                 }
 
                 editText.setTextColor(textColor);
+
 
                 scaledrone = new Scaledrone(channelID);
                 scaledrone.connect(new Listener() {
@@ -215,4 +238,5 @@ public class ChatFragment extends BaseStrategoFragment implements RoomListener {
         SharedPreferencesUtil.saveSharedPreference(color, SharedPreferencesUtil.UserColor, SharedPreferencesUtil.UserColor);
         return color;
     }
+
 }
