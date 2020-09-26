@@ -140,11 +140,6 @@ public class HomeActivity extends AppCompatActivity implements UserProfileFragme
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-//        List<String> testDeviceIds = Arrays.asList("97F43D00DD6033E7C0B068F1839AD180");
-//        RequestConfiguration configuration =
-//                new RequestConfiguration.Builder().setTestDeviceIds(testDeviceIds).build();
-//        MobileAds.setRequestConfiguration(configuration);
-
         MobileAds.initialize(this, new OnInitializationCompleteListener() {
             @Override
             public void onInitializationComplete(InitializationStatus initializationStatus) {

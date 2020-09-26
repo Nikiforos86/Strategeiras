@@ -138,7 +138,7 @@ public class ChatFragment extends BaseStrategoFragment implements RoomListener {
                         System.out.println("Scaledrone connection open");
                         // Since the MainActivity itself already implement RoomListener we can pass it as a target
 //                        mRoom = scaledrone.subscribe(roomName, ChatFragment.this);
-                        mRoom = scaledrone.subscribe(roomName, ChatFragment.this, new SubscribeOptions(50)); // ask for 50 messages from the history
+                        mRoom = scaledrone.subscribe(roomName, ChatFragment.this, new SubscribeOptions(100));
                         mRoom.listenToHistoryEvents(new HistoryRoomListener() {
                             @Override
                             public void onHistoryMessage(Room room, com.scaledrone.lib.Message message) {
