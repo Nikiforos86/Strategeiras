@@ -266,6 +266,31 @@
 
             </LinearLayout>
 
+            <LinearLayout
+                android:id="@+id/processing_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginRight="16dp"
+                >
+
+                <ProgressBar
+                    android:layout_margin="8dp"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"/>
+
+                <TextView
+                    android:id="@+id/processing"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:layout_gravity="center"
+                    tools:text="Επεξεργασία 1234 από 123456" />
+
+            </LinearLayout>
+
             <Button
                 android:id="@+id/logout_button"
                 style="@style/Widget.AppCompat.Button.Borderless.Colored"

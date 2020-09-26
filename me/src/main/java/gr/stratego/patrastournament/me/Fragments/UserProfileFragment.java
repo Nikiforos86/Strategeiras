@@ -56,8 +56,11 @@ public class UserProfileFragment extends BaseStrategoFragment {
 
     private View mNextRoundView;
     private View mHistoryLayout;
+    private View mProcessingLayout;
     private TextView mNextRoundTextView;
     private TextView mNextRountTableTextView, mLeftName, mRightName, mScore;
+    private TextView mProcessing;
+
 
     private TextView mTitleTextView;
     private TextInputEditText mMailInput;
@@ -119,6 +122,9 @@ public class UserProfileFragment extends BaseStrategoFragment {
         mRightName = view.findViewById(R.id.rightTextView);
         mScore = view.findViewById(R.id.scoreTextView);
         mNextRountTableTextView = view.findViewById(R.id.indexTextView);
+
+        mProcessingLayout = view.findViewById(R.id.processing_layout);
+        mProcessing = view.findViewById(R.id.processing);
 
         mTitleTextView = view.findViewById(R.id.title_text_view);
         mMailInput = view.findViewById(R.id.email_input);
@@ -195,7 +201,7 @@ public class UserProfileFragment extends BaseStrategoFragment {
         if(mSubscription != null){
             mSubscription.unsubscribe();
         }
-        mSubscription = Observable.interval(5, TimeUnit.SECONDS)
+        mSubscription = Observable.interval(10, TimeUnit.SECONDS)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<Long>() {
@@ -304,6 +310,9 @@ public class UserProfileFragment extends BaseStrategoFragment {
 
         mHistoryLayout.setBackground(bg);
 
+        mProcessing.setTextColor(textColor);
+        mProcessingLayout.setBackground(bg);
+
         mNextRountTableTextView.setTextColor(textColor);
         mTitleTextView.setTextColor(textColor);
 
@@ -344,6 +353,11 @@ public class UserProfileFragment extends BaseStrategoFragment {
             updateUI();
         }
     }
+
+    public void updateBattlesProcessing(int currentBattles, int allBattles){
+        mProcessing.setText("Επεξεργασία μαχών:"+currentBattles+" από "+allBattles);
+    }
+
 
     @Override
     public void onAttach(Context context) {

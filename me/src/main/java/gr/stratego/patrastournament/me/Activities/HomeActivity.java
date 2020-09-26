@@ -404,11 +404,14 @@ public class HomeActivity extends AppCompatActivity implements UserProfileFragme
             pastBattles.add(entry.getValue());
         }
 
-        Timber.d("Total: "+mPastBattles.size());
+        Timber.d("Total: "+mPastBattles.size() +" total parsed "+totalBattlesParsed);
+        mUserProfileFragment.updateBattlesProcessing(totalBattlesParsed, mPastBattles.size());
         if(mPastBattles.size() > 0){
             if(totalBattlesParsed == mPastBattles.size()){
-                subscription.unsubscribe();
+//                subscription.unsubscribe();
+                Timber.d("UNSUBSCRIBE");
             }
+
             totalBattlesParsed = mPastBattles.size();
         }
         return pastBattles;
