@@ -23,6 +23,7 @@ import androidx.viewpager.widget.ViewPager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
@@ -90,6 +91,7 @@ public class HomeActivity extends AppCompatActivity implements UserProfileFragme
     private String mdlMail;
     private String mdlPin;
     private int totalBattlesParsed;
+    private boolean goneOnce = false;
 
     private ConcurrentHashMap<String, PastBattle> mPastBattles = new ConcurrentHashMap<>();
     private ConcurrentHashMap<String, InfoTournament> mInfoTournament = new ConcurrentHashMap<>();
@@ -324,11 +326,15 @@ public class HomeActivity extends AppCompatActivity implements UserProfileFragme
                                                 if (StringUtils.isNotNullOrEmpty(dataSnapshot3.getKey())) {
                                                     pastBattle.setPlayer2(dataSnapshot3.getKey());
                                                     pastBattle.setResultPlayer2((String) dataSnapshot3.getValue());
+                                                    Log.d("HomeActivity", "update tournament "+tournamentKey+ battleKey);
+
                                                 }
 //                                                Timber.d("Added battle "+pastBattle.toString());
                                             } else {
                                                 PastBattle pastBattle = new PastBattle();
                                                 pastBattle.setTournament(tournamentKey);
+                                                Log.d("HomeActivity", "create tournament "+tournamentKey+ battleKey);
+
                                                 if (StringUtils.isNotNullOrEmpty(dataSnapshot3.getKey())) {
                                                     pastBattle.setPlayer1(dataSnapshot3.getKey());
                                                     pastBattle.setResultPlayer1((String) dataSnapshot3.getValue());
@@ -398,6 +404,7 @@ public class HomeActivity extends AppCompatActivity implements UserProfileFragme
         initUI();
     }
 
+
     private ArrayList<PastBattle> getAllPastBattles(Subscription subscription) {
         ArrayList<PastBattle> pastBattles = new ArrayList<>();
         for (Map.Entry<String, PastBattle> entry : mPastBattles.entrySet()) {
@@ -408,8 +415,12 @@ public class HomeActivity extends AppCompatActivity implements UserProfileFragme
         mUserProfileFragment.updateBattlesProcessing(totalBattlesParsed, mPastBattles.size());
         if(mPastBattles.size() > 0){
             if(totalBattlesParsed == mPastBattles.size()){
-//                subscription.unsubscribe();
-                Timber.d("UNSUBSCRIBE");
+                if(goneOnce){
+                    subscription.unsubscribe();
+                    mUserProfileFragment.hideBattlesProcessing();
+                    Timber.d("UNSUBSCRIBE");
+                }
+                goneOnce = true;
             }
 
             totalBattlesParsed = mPastBattles.size();
@@ -443,6 +454,7 @@ public class HomeActivity extends AppCompatActivity implements UserProfileFragme
         }
 
         // getAllPAstBattles has all past battles as a list
+
         for (PastBattle pastBattle : getAllPastBattles(subscription)) {
 
             if ((StringUtils.areEqual(firstPlayer, pastBattle.getPlayer1()) && StringUtils.areEqual(secondPlayer, pastBattle.getPlayer2()))

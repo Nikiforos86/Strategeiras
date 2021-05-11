@@ -153,11 +153,16 @@
                             app:autoSizeTextType="uniform"
                             tools:text="Georgios Trypanagnostopoulos" />
                 </LinearLayout>
+
+
             </LinearLayout>
 
-            <LinearLayout
+            <androidx.core.widget.NestedScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:id="@+id/history_layout"
                 android:visibility="gone"
+                tools:visibility="visible"
                 android:layout_marginLeft="16dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginRight="16dp"
@@ -165,6 +170,10 @@
                 android:paddingTop="8dp"
                 android:paddingRight="8dp"
                 android:paddingBottom="10dp"
+                >
+
+            <LinearLayout
+
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
@@ -265,11 +274,13 @@
                     android:layout_height="wrap_content"/>
 
             </LinearLayout>
+            </androidx.core.widget.NestedScrollView>
 
             <LinearLayout
                 android:id="@+id/processing_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 android:orientation="horizontal"
                 android:layout_marginLeft="16dp"
                 android:layout_marginTop="16dp"

@@ -12,6 +12,7 @@ import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -201,7 +202,8 @@ public class UserProfileFragment extends BaseStrategoFragment {
         if(mSubscription != null){
             mSubscription.unsubscribe();
         }
-        mSubscription = Observable.interval(10, TimeUnit.SECONDS)
+        Log.d("UserProfileFragment", "setupPastBattlesTimer");
+        mSubscription = Observable.interval(6, TimeUnit.SECONDS)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<Long>() {
@@ -210,10 +212,10 @@ public class UserProfileFragment extends BaseStrategoFragment {
                         setupPastBattles(battleResult);
                     }
                 });
-
     }
 
     private void setupPastBattles(final BattleResultModel battleResult) {
+        Log.d("UserProfileFragment", "setupPastBattles");
                 ArrayList<Object> playersPastBattles = mListener.findPastBattles(battleResult, mSubscription);
                 if(CollectionUtils.isNotEmpty(playersPastBattles)) {
 					
@@ -355,7 +357,16 @@ public class UserProfileFragment extends BaseStrategoFragment {
     }
 
     public void updateBattlesProcessing(int currentBattles, int allBattles){
-        mProcessing.setText("Επεξεργασία μαχών:"+currentBattles+" από "+allBattles);
+        showBattlesProcessing();
+        mProcessing.setText("Processing battles: "+currentBattles+" from "+allBattles);
+    }
+
+    public void hideBattlesProcessing(){
+        mProcessingLayout.setVisibility(View.GONE);
+    }
+
+    private void showBattlesProcessing(){
+        mProcessingLayout.setVisibility(View.VISIBLE);
     }
 
 
